@@ -472,9 +472,11 @@ body.tr2 .gr-nuevo{display:grid;}
 .ws-tramo-t{font-family:Michroma,sans-serif;font-size:15px;letter-spacing:.22em;color:var(--cu2);text-align:center;margin-bottom:14px;}
 .ws-tramo-b{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .ws-tramo-b button{padding:13px 10px !important;width:100%;}
-.ws-extra{display:flex;gap:12px;justify-content:center;margin-top:18px;}
-#wsScreen .ws-extra button:nth-child(1){--fc:rgba(143,163,189,.3);}
-#wsScreen .ws-extra button:nth-child(2){--fc:rgba(255,215,0,.45);}
+.ws-tramo-b button:nth-child(5){grid-column:1/-1;}
+#wsScreen .ws-admin-punto{position:absolute;top:12px;right:12px;width:10px;height:10px;padding:0 !important;border-radius:50%;border:none !important;clip-path:none;background:#2a3a52 !important;cursor:pointer;opacity:.35;transition:opacity .2s;z-index:2;}
+#wsScreen .ws-admin-punto:hover{opacity:.9;}
+#wsScreen .ws-admin-punto::before{display:none;}
+#wsAdminBox{margin-top:18px !important;}
 .hdr-tramo{display:inline-block;padding:1px 8px;border:1px solid rgba(194,119,58,.6);color:var(--cu2);font-size:12px;letter-spacing:.14em;cursor:pointer;vertical-align:middle;}
 .hdr-tramo:hover{background:rgba(194,119,58,.15);}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
@@ -502,18 +504,17 @@ body.tr2 .gr-nuevo{display:grid;}
     <button onclick="wsTramo('34','103')" style="padding:14px 28px;border:2px solid rgba(26,111,212,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t103);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,111,212,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="103">FELIX</span></button>
     <button onclick="wsTramo('34','102')" style="padding:14px 28px;border:2px solid rgba(119,119,119,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#AAA;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(119,119,119,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="102">ANTONIO</span></button>
     <button onclick="wsTramo('34','101')" style="padding:14px 28px;border:2px solid rgba(26,171,90,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t101);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,171,90,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="101">JOSÉ</span></button>
+    <button onclick="wsTramo('34','invitado')" style="padding:14px 28px;border:2px solid #222;background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#666;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='#111'">INVITADO</button>
     </div></div>
     <div class="ws-tramo" data-tr="2"><div class="ws-tramo-t">TRAMO 2</div><div class="ws-tramo-b">
     <button onclick="wsTramo('2','temez')" style="padding:14px 28px;border:2px solid rgba(255,90,0,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--orange);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,90,0,0.1)'" onmouseout="this.style.background='#111'">🏁 <span data-nm="tz">TEMEZ</span></button>
     <button onclick="wsTramo('2','103')" style="padding:14px 28px;border:2px solid rgba(26,111,212,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t103);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,111,212,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="103">FELIX</span></button>
     <button onclick="wsTramo('2','102')" style="padding:14px 28px;border:2px solid rgba(119,119,119,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#AAA;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(119,119,119,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="102">ANTONIO</span></button>
     <button onclick="wsTramo('2','101')" style="padding:14px 28px;border:2px solid rgba(26,171,90,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t101);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,171,90,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="101">JOSÉ</span></button>
+    <button onclick="wsTramo('2','invitado')" style="padding:14px 28px;border:2px solid #222;background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#666;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='#111'">INVITADO</button>
     </div></div>
   </div>
-  <div class="ws-extra">
-    <button onclick="wsEnter('invitado')" style="padding:14px 28px;border:2px solid #222;background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#666;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='#111'">INVITADO</button>
-    <button onclick="wsShowAdmin()" id="wsAdminBtn" style="padding:14px 28px;border:2px solid rgba(255,215,0,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#FFD700;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,215,0,0.08)'" onmouseout="this.style.background='#111'">ADMIN</button>
-  </div>
+  <button onclick="wsShowAdmin()" id="wsAdminBtn" class="ws-admin-punto" title="" aria-label="Admin"></button>
   <div id="wsAdminBox" style="display:none;margin-top:16px;text-align:center;">
     <input id="wsAdminPass" type="password" placeholder="contraseña" style="background:#1a1a1a;border:1px solid #333;color:#fff;font-family:Oswald,sans-serif;font-size:16px;padding:10px 16px;outline:none;width:180px;text-align:center;letter-spacing:4px;" onkeydown="if(event.key==='Enter')wsCheckAdmin()">
     <button onclick="wsCheckAdmin()" style="margin-left:8px;padding:10px 20px;background:var(--orange);border:none;color:#fff;font-family:Oswald,sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;">OK</button>

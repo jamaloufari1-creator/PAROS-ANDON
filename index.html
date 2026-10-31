@@ -394,6 +394,36 @@ body.es-admin #btnNombres{display:inline-flex;}
   .wk-c{min-width:92px;}
 }
 
+
+/* ══ ÁNGULOS (31/10): esquina cortada + línea diagonal en botones y cajas ══ */
+.btn-act,.btn-confirm,.btn-cancel-pdf,.modal-close,.pdf-btn,.chart-toggle-btn,.festivo-day,.wk-arr,.wk-hoy,.wk-btn,.wk-c,.wk-pill,.login-btn,.pdf-zone,.kpi-msg-block{
+  position:relative;border-color:transparent !important;border-radius:0 !important;--c:7px;
+  clip-path:polygon(0 0,calc(100% - var(--c)) 0,100% var(--c),100% 100%,var(--c) 100%,0 calc(100% - var(--c))) !important;}
+.btn-act::before,.btn-confirm::before,.btn-cancel-pdf::before,.modal-close::before,.pdf-btn::before,.chart-toggle-btn::before,.festivo-day::before,.wk-arr::before,.wk-hoy::before,.wk-btn::before,.wk-c::before,.wk-pill::before,.login-btn::before,.pdf-zone::before,.kpi-msg-block::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:var(--fc,rgba(194,119,58,.6));
+  clip-path:polygon(evenodd,0 0,calc(100% - var(--c)) 0,100% var(--c),100% 100%,var(--c) 100%,0 calc(100% - var(--c)),0 0,
+  1px 1px,1px calc(100% - var(--c) - .4px),calc(var(--c) + .4px) calc(100% - 1px),calc(100% - 1px) calc(100% - 1px),calc(100% - 1px) calc(var(--c) + .4px),calc(100% - var(--c) - .4px) 1px,1px 1px);}
+.wk-btn{--c:9px;--fc:var(--cu);}
+.wk-arr:disabled{--fc:rgba(143,163,189,.25);}
+.wk-c{--c:6px;--fc:#2c3f5a;}
+.wk-c.con-datos{--fc:rgba(194,119,58,.6);}
+.wk-c.sel,.btn-act.primary,.login-btn{--fc:rgba(255,230,200,.5);}
+.wk-c.hoy{outline:none;--fc:var(--t101);}
+.wk-ley u{outline:none;border:1px solid var(--t101);}
+.festivo-day.fest{--fc:#E03030;}
+.btn-confirm{--fc:rgba(255,255,255,.4);}
+.btn-act.blue{--fc:var(--t103);}
+.chart-toggle-btn.active{--fc:var(--cu);}
+.pdf-zone{--c:12px;--fc:rgba(194,119,58,.45);}
+.pdf-zone:hover,.pdf-zone.has-file{--fc:var(--cu);}
+.kpi-msg-block{--c:8px;--fc:rgba(143,163,189,.22);}
+.kpi-msg-body{border:none !important;}
+.wk-pill{--c:5px;}
+/* separación entre recuadros (antes se tocaban) */
+.tab-section.active{display:flex;flex-direction:column;gap:16px;}
+.tab-section > .panel{margin-top:0 !important;}
+#dataSection > * + *{margin-top:16px !important;}
+#dataSection > .action-bar{margin-bottom:0;}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
 #ml2-escudo canvas{width:100%;height:100%;display:block;}
 #ml2-escudo.fin canvas{filter:drop-shadow(0 0 9px rgba(255,150,70,.6));transition:filter 1.2s;}
@@ -1408,6 +1438,7 @@ function drawChart(){
 
   // ── Líneas objetivo — diagonales según días festivos ──
   const WEEK_CAMBIO = WEEK_CAMBIO_OBJ;
+  svg._lblY=[];
 
   function dibujarLineaObjDiagonal(fn,color,dash,sw,label,xStartWeek,xEndWeek){
     const ws=Math.max(viewStart+1,xStartWeek);
@@ -1433,10 +1464,12 @@ function drawChart(){
     pl.setAttribute('stroke-width',sw);pl.setAttribute('stroke-dasharray',dash);
     pl.setAttribute('stroke-linejoin','round');svg.appendChild(pl);
     const ot=document.createElementNS('http://www.w3.org/2000/svg','text');
-    ot.setAttribute('x',Math.max(pts[0].x,PL)+4);ot.setAttribute('y',pts[0].y-4);ot.setAttribute('text-anchor','start');
+    const pU=pts[pts.length-1];let ly=pU.y-4;const usados=svg._lblY||(svg._lblY=[]);
+    while(usados.some(u=>Math.abs(u-ly)<11))ly-=11;usados.push(ly);
+    ot.setAttribute('x',pU.x-40);ot.setAttribute('y',ly);ot.setAttribute('text-anchor','end');
     ot.setAttribute('fill',color);ot.setAttribute('font-family','Oswald');
     ot.setAttribute('font-size','9');ot.setAttribute('font-weight','700');
-    const valSem=fn(ws);
+    const valSem=fn(we);
     const totSec=Math.round(valSem*60);
     const mmL=Math.floor(totSec/60),ssL=totSec%60;
     ot.textContent=`${label} ${mmL}:${String(ssL).padStart(2,'0')}`;svg.appendChild(ot);
@@ -1669,13 +1702,13 @@ function renderTurnoClas(){
   turnos.forEach(trn=>{
     const ranked=TACTOS.map(tacto=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[tacto]?.[trn.key]?.[di]||0);});return{tacto,sec,v:secToMs(sec)};}).sort((a,b)=>b.sec-a.sec);
     const maxSec=ranked[0]?.sec||1;
-    html+=`<div><div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(0,0,0,.04);border:1px solid var(--border-dk);border-bottom:3px solid ${trn.color};margin-bottom:1px;">
+    html+=`<div><div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.035);border-bottom:3px solid ${trn.color};clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);margin-bottom:1px;">
       <span style="font-family:Oswald;font-weight:900;font-size:28px;color:${trn.color}">${trn.label}</span>
       <span style="font-family:Oswald;font-size:10px;letter-spacing:2px;color:var(--text3)">CLASIFICACIÓN TURNO</span></div>
       <table class="tbl" style="font-size:12px;"><thead><tr><th style="text-align:center;width:30px">#</th><th>Tacto</th><th style="width:60px">Paro</th><th>Min</th><th style="color:var(--orange)">COCHES</th></tr></thead><tbody>`;
     ranked.forEach((item,i)=>{
       html+=`<tr${i===0&&item.sec>0?' style="background:rgba(255,90,0,.04)"':''}>
-        <td style="text-align:center;font-family:Oswald;font-weight:900;font-size:14px;color:${i===0&&item.sec>0?'var(--orange)':'var(--text3)'}">${item.sec>0?medals[i]:''}${i+1}</td>
+        <td style="text-align:center;font-family:Oswald;font-weight:900;font-size:14px;color:${i===0&&item.sec>0?'var(--orange)':'var(--text3)'}">${item.sec>0?(medals[i]||'⚪'):''}${i+1}</td>
         <td style="font-family:Oswald;font-weight:900;font-size:12px;color:${item.sec>0?trn.color:'var(--text3)'};">${TN(item.tacto)}</td>
         <td style="padding:4px 8px;"><div style="background:var(--bg-card);height:8px;border-radius:2px;overflow:hidden;border:1px solid var(--border);"><div style="height:100%;width:${(item.sec/maxSec*100).toFixed(1)}%;background:${trn.color};"></div></div></td>
         <td style="text-align:right;font-family:Oswald;font-weight:700;">${f(item.v)}</td>
@@ -1696,13 +1729,13 @@ function renderTurnoClasAnual(){
   turnos.forEach(trn=>{
     const ranked=TACTOS.map(tacto=>{let sec=0;for(let w=1;w<=WEEKS;w++)DAYS.forEach((_,di)=>{sec+=msToSec(data[w]?.[tacto]?.[trn.key]?.[di]||0);});return{tacto,sec,v:secToMs(sec)};}).sort((a,b)=>b.sec-a.sec);
     const maxSec=ranked[0]?.sec||1;
-    html+=`<div><div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(0,0,0,.04);border:1px solid var(--border-dk);border-bottom:3px solid ${trn.color};margin-bottom:1px;">
+    html+=`<div><div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.035);border-bottom:3px solid ${trn.color};clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);margin-bottom:1px;">
       <span style="font-family:Oswald;font-weight:900;font-size:28px;color:${trn.color}">${trn.label}</span>
       <span style="font-family:Oswald;font-size:10px;letter-spacing:2px;color:var(--text3)">ACUMULADO ANUAL</span></div>
       <table class="tbl" style="font-size:12px;"><thead><tr><th style="text-align:center;width:30px">#</th><th>Tacto</th><th style="width:60px">Paro</th><th>Min</th><th style="color:var(--orange)">COCHES</th></tr></thead><tbody>`;
     ranked.forEach((item,i)=>{
       html+=`<tr${i===0&&item.sec>0?' style="background:rgba(255,90,0,.04)"':''}>
-        <td style="text-align:center;font-family:Oswald;font-weight:900;font-size:14px;color:${i===0&&item.sec>0?'var(--orange)':'var(--text3)'}">${item.sec>0?medals[i]:''}${i+1}</td>
+        <td style="text-align:center;font-family:Oswald;font-weight:900;font-size:14px;color:${i===0&&item.sec>0?'var(--orange)':'var(--text3)'}">${item.sec>0?(medals[i]||'⚪'):''}${i+1}</td>
         <td style="font-family:Oswald;font-weight:900;font-size:12px;color:${item.sec>0?trn.color:'var(--text3)'};">${TN(item.tacto)}</td>
         <td style="padding:4px 8px;"><div style="background:var(--bg-card);height:8px;border-radius:2px;overflow:hidden;border:1px solid var(--border);"><div style="height:100%;width:${(item.sec/maxSec*100).toFixed(1)}%;background:${trn.color};"></div></div></td>
         <td style="text-align:right;font-family:Oswald;font-weight:700;">${f(item.v)}</td>
@@ -1799,7 +1832,7 @@ function renderParadas(){
   turnos.forEach(trn=>{
     const ranked=TACTOS.map(t=>({t,v:pd[t]?.[trn.key]||0})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
     const maxV=ranked[0]?.v||1;
-    html+=`<div><div style="background:rgba(0,0,0,.04);border:1px solid var(--border-dk);border-bottom:3px solid ${trn.color};padding:10px 14px;margin-bottom:1px;font-family:Oswald;font-weight:900;font-size:28px;color:${trn.color}">${trn.label} <span style="font-size:10px;letter-spacing:2px;color:var(--text3);font-weight:600">PARADAS</span></div>
+    html+=`<div><div style="background:rgba(255,255,255,.035);border-bottom:3px solid ${trn.color};clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);padding:10px 14px;margin-bottom:1px;font-family:Oswald;font-weight:900;font-size:28px;color:${trn.color}">${trn.label} <span style="font-size:10px;letter-spacing:2px;color:var(--text3);font-weight:600">PARADAS</span></div>
       <table class="tbl" style="font-size:12px;"><thead><tr><th style="text-align:center;width:30px">#</th><th>Tacto</th><th style="width:60px">Freq.</th><th>Paradas</th></tr></thead><tbody>
       ${ranked.map((x,i)=>`<tr${i===0?' style="background:rgba(255,90,0,.04)"':''}>
         <td style="text-align:center;font-family:Oswald;font-weight:900;font-size:14px;color:${i===0?'var(--orange)':'var(--text3)'}">${medals[i]}${i+1}</td>

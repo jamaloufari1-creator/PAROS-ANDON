@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+window.TR2=(function(){try{var q=new URLSearchParams(location.search).get('tramo');if(q)sessionStorage.setItem('paros_tramo',q);return (q||sessionStorage.getItem('paros_tramo'))==='2';}catch(e){return false;}})();
+window.LSK=function(k){return window.TR2?k+'_tr2':k;};
+</script>
 <title>PAROS ANDON · ML2 · RAMAL 2</title>
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon512.png">
@@ -455,6 +459,24 @@ body.sem-vac .vac-aviso{display:inline;}
 .gr-row.con i{color:var(--cu2);}
 .gr-row select:focus{border-color:var(--cu);}
 .gr-row.con select{color:#f0c49a;border-color:var(--cu);}
+.gr-nuevo{display:none;grid-template-columns:90px 1fr auto;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(194,119,58,.35);}
+body.tr2 .gr-nuevo{display:grid;}
+.gr-nuevo input{background:#101c2d;color:var(--text);border:1px solid rgba(194,119,58,.45);font-family:Oswald,sans-serif;font-size:14px;padding:6px 8px;outline:none;min-width:0;}
+.gr-nuevo input:focus{border-color:var(--cu);}
+/* inicio con dos zonas de tramo, como ML2 Crew */
+.ws-tramos{display:flex;gap:22px;justify-content:center;flex-wrap:wrap;width:100%;max-width:900px;padding:0 16px;box-sizing:border-box;}
+.ws-tramo{position:relative;box-sizing:border-box;--c:16px;padding:16px 18px 18px;background:rgba(10,22,38,.72);clip-path:polygon(0 0,calc(100% - var(--c)) 0,100% var(--c),100% 100%,var(--c) 100%,0 calc(100% - var(--c)));min-width:0;flex:1 1 340px;max-width:420px;}
+.ws-tramo::before{content:"";position:absolute;inset:0;pointer-events:none;background:rgba(194,119,58,.55);
+  clip-path:polygon(evenodd,0 0,calc(100% - var(--c)) 0,100% var(--c),100% 100%,var(--c) 100%,0 calc(100% - var(--c)),0 0,
+  1.5px 1.5px,1.5px calc(100% - var(--c) - .6px),calc(var(--c) + .6px) calc(100% - 1.5px),calc(100% - 1.5px) calc(100% - 1.5px),calc(100% - 1.5px) calc(var(--c) + .6px),calc(100% - var(--c) - .6px) 1.5px,1.5px 1.5px);}
+.ws-tramo-t{font-family:Michroma,sans-serif;font-size:15px;letter-spacing:.22em;color:var(--cu2);text-align:center;margin-bottom:14px;}
+.ws-tramo-b{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.ws-tramo-b button{padding:13px 10px !important;width:100%;}
+.ws-extra{display:flex;gap:12px;justify-content:center;margin-top:18px;}
+#wsScreen .ws-extra button:nth-child(1){--fc:rgba(143,163,189,.3);}
+#wsScreen .ws-extra button:nth-child(2){--fc:rgba(255,215,0,.45);}
+.hdr-tramo{display:inline-block;padding:1px 8px;border:1px solid rgba(194,119,58,.6);color:var(--cu2);font-size:12px;letter-spacing:.14em;cursor:pointer;vertical-align:middle;}
+.hdr-tramo:hover{background:rgba(194,119,58,.15);}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
 #ml2-escudo canvas{width:100%;height:100%;display:block;}
 #ml2-escudo.fin canvas{filter:drop-shadow(0 0 9px rgba(255,150,70,.6));transition:filter 1.2s;}
@@ -474,11 +496,21 @@ body.sem-vac .vac-aviso{display:inline;}
   <div style="font-size:clamp(40px,6vw,72px);font-weight:900;color:#fff;line-height:1;text-align:center;letter-spacing:-1px;margin-bottom:4px;">PAROS <span style="color:var(--orange)">ANDON</span></div>
   <div style="font-size:14px;letter-spacing:4px;color:#444;margin-bottom:40px;">RAMAL 2 · LÍNEA ML2</div>
   <div style="font-size:13px;letter-spacing:3px;color:#666;margin-bottom:20px;">¿QUIÉN ERES?</div>
-  <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;max-width:600px;">
-    <button onclick="wsEnter('temez')" style="padding:14px 28px;border:2px solid rgba(255,90,0,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--orange);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,90,0,0.1)'" onmouseout="this.style.background='#111'">🏁 <span data-nm="tz">TEMEZ</span></button>
-    <button onclick="wsEnter('103')" style="padding:14px 28px;border:2px solid rgba(26,111,212,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t103);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,111,212,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="103">FELIX</span></button>
-    <button onclick="wsEnter('102')" style="padding:14px 28px;border:2px solid rgba(119,119,119,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#AAA;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(119,119,119,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="102">ANTONIO</span></button>
-    <button onclick="wsEnter('101')" style="padding:14px 28px;border:2px solid rgba(26,171,90,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t101);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,171,90,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="101">JOSÉ</span></button>
+  <div class="ws-tramos">
+    <div class="ws-tramo" data-tr="34"><div class="ws-tramo-t">TRAMO 3/4</div><div class="ws-tramo-b">
+    <button onclick="wsTramo('34','temez')" style="padding:14px 28px;border:2px solid rgba(255,90,0,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--orange);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,90,0,0.1)'" onmouseout="this.style.background='#111'">🏁 <span data-nm="tz">TEMEZ</span></button>
+    <button onclick="wsTramo('34','103')" style="padding:14px 28px;border:2px solid rgba(26,111,212,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t103);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,111,212,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="103">FELIX</span></button>
+    <button onclick="wsTramo('34','102')" style="padding:14px 28px;border:2px solid rgba(119,119,119,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#AAA;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(119,119,119,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="102">ANTONIO</span></button>
+    <button onclick="wsTramo('34','101')" style="padding:14px 28px;border:2px solid rgba(26,171,90,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t101);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,171,90,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="101">JOSÉ</span></button>
+    </div></div>
+    <div class="ws-tramo" data-tr="2"><div class="ws-tramo-t">TRAMO 2</div><div class="ws-tramo-b">
+    <button onclick="wsTramo('2','temez')" style="padding:14px 28px;border:2px solid rgba(255,90,0,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--orange);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,90,0,0.1)'" onmouseout="this.style.background='#111'">🏁 <span data-nm="tz">TEMEZ</span></button>
+    <button onclick="wsTramo('2','103')" style="padding:14px 28px;border:2px solid rgba(26,111,212,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t103);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,111,212,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="103">FELIX</span></button>
+    <button onclick="wsTramo('2','102')" style="padding:14px 28px;border:2px solid rgba(119,119,119,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#AAA;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(119,119,119,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="102">ANTONIO</span></button>
+    <button onclick="wsTramo('2','101')" style="padding:14px 28px;border:2px solid rgba(26,171,90,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t101);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,171,90,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="101">JOSÉ</span></button>
+    </div></div>
+  </div>
+  <div class="ws-extra">
     <button onclick="wsEnter('invitado')" style="padding:14px 28px;border:2px solid #222;background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#666;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='#111'">INVITADO</button>
     <button onclick="wsShowAdmin()" id="wsAdminBtn" style="padding:14px 28px;border:2px solid rgba(255,215,0,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#FFD700;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,215,0,0.08)'" onmouseout="this.style.background='#111'">ADMIN</button>
   </div>
@@ -548,7 +580,7 @@ body.sem-vac .vac-aviso{display:inline;}
   <div class="hdr-l">
     <img src="ml2.png" class="hdr-logo" alt="ML2">
     <div class="badge">SEAT · CUPRA</div>
-    <div class="hdr-title">PAROS ANDON <em>·</em> ML2 · RAMAL 2</div>
+    <div class="hdr-title" style="white-space:nowrap;">PAROS ANDON <em>·</em> ML2 · <span id="hdrTramo" class="hdr-tramo" onclick="cambiarTramo()" title="Cambiar de tramo">TRAMO 3/4 ⇄</span></div>
   </div>
   <div class="hdr-r">
     <div class="leg">
@@ -998,6 +1030,7 @@ body.sem-vac .vac-aviso{display:inline;}
     <div class="modal-body" style="gap:4px;">
       <div class="nm-nota">Solo lo ve el admin. La app lo guarda por dentro; no sale en ninguna pantalla.</div>
       <div id="grLista"></div>
+      <div id="grNuevo" class="gr-nuevo"><input id="grNum" type="number" placeholder="Nº tacto"><input id="grNom" type="text" placeholder="Nombre de la carga"><button class="wk-hoy" onclick="anadirCargaTR2()">＋ AÑADIR CARGA</button></div>
       <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
         <button class="btn-cancel-pdf" onclick="cerrarGrupos()">CANCELAR</button>
         <button class="btn-act primary" onclick="guardarGrupos()">GUARDAR GRUPOS</button>
@@ -1047,21 +1080,51 @@ import{initializeApp}from'https://www.gstatic.com/firebasejs/10.14.0/firebase-ap
 import{getFirestore,doc,setDoc,getDoc,onSnapshot}from'https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js';
 const app=initializeApp({apiKey:"AIzaSyBfz8Zvwxzb4NKYEl_UB7LTm0JUtcFOfxg",authDomain:"paros-andon.firebaseapp.com",projectId:"paros-andon",storageBucket:"paros-andon.firebasestorage.app",messagingSenderId:"72773555727",appId:"1:72773555727:web:8f3f0e3b35f40e8500357a"});
 const db=getFirestore(app);
-const REF=doc(db,'dashboard','paros-andon-ml2');
-window.fbSave=async p=>{try{await setDoc(REF,p,{merge:true});}catch(e){console.error(e);}};
-window.fbLoad=async()=>{try{const s=await getDoc(REF);if(s.exists())return s.data();}catch(e){console.error(e);}return null;};
-window.fbListen=cb=>onSnapshot(REF,s=>{if(s.exists())cb(s.data());});
+const REF0=doc(db,'dashboard','paros-andon-ml2');
+const REF=window.TR2?doc(db,'dashboard','paros-andon-ml2-tr2'):REF0;
+const COMUN=['nombres','vacaciones','festivos'];
+const parte=(o,com)=>{const r={};Object.keys(o||{}).forEach(k=>{if(COMUN.includes(k)===com)r[k]=o[k];});return r;};
+window.fbSave=async p=>{try{
+  if(!window.TR2){await setDoc(REF,p,{merge:true});return;}
+  const a=parte(p,false),b=parte(p,true);
+  if(Object.keys(a).length)await setDoc(REF,a,{merge:true});
+  if(Object.keys(b).length)await setDoc(REF0,b,{merge:true});
+}catch(e){console.error(e);}};
+window.fbLoad=async()=>{try{
+  if(!window.TR2){const s=await getDoc(REF);if(s.exists())return s.data();return null;}
+  const [s,s0]=await Promise.all([getDoc(REF),getDoc(REF0)]);
+  return Object.assign({},s.exists()?parte(s.data(),false):{},s0.exists()?parte(s0.data(),true):{});
+}catch(e){console.error(e);}return null;};
+window.fbListen=cb=>{
+  onSnapshot(REF,s=>{if(s.exists())cb(window.TR2?parte(s.data(),false):s.data());});
+  if(window.TR2)onSnapshot(REF0,s=>{if(s.exists())cb(parte(s.data(),true));});
+};
 </script>
 
 <script>
 /* ══ CONSTANTES ══ */
+/* TRAMO 2: lista de tactos propia {num:nombre}; se crea sola al subir PDF y admin puede añadir */
+function _aplicarTactosTR2(o){if(!window.TR2||!o)return;Object.keys(o).forEach(k=>{const n=parseInt(k);if(!n)return;if(!TACTOS.includes(n))TACTOS.push(n);if(o[k])TN_MAP[n]=o[k];});TACTOS.sort((a,b)=>a-b);}
+function _tactosTR2Obj(){const o={};TACTOS.forEach(t=>o[t]=TN_MAP[t]||'');return o;}
+function cargarTactos(r){if(!window.TR2||!r||!r.tactos)return;try{_aplicarTactosTR2(JSON.parse(r.tactos));localStorage.setItem(LSK('paros_tactos'),JSON.stringify(_tactosTR2Obj()));}catch(e){}}
+function nuevoTacto(t,nombre,guardar){
+  t=parseInt(t);if(!window.TR2||!t||TACTOS_TR34.includes(t))return false;
+  const era=TACTOS.includes(t);if(!era)TACTOS.push(t);TACTOS.sort((a,b)=>a-b);
+  if(nombre)TN_MAP[t]=String(nombre).trim().toUpperCase().slice(0,40);
+  if(typeof data==='object')for(let w=1;w<=WEEKS;w++){if(!data[w])data[w]={};if(!data[w][t])data[w][t]={t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0,0,0,0,0]};}
+  localStorage.setItem(LSK('paros_tactos'),JSON.stringify(_tactosTR2Obj()));
+  if(guardar!==false&&window.fbSave)window.fbSave({tactos:JSON.stringify(_tactosTR2Obj())});
+  return !era;
+}
 const DAYS=['Lunes','Martes','Miércoles','Jueves','Viernes'];
-const TACTOS=[207,211,212,213,214,215,217,218,219,220,221,227,230,233,234,236,243];
-const TN_MAP={207:'SOP.MASTER ABS',211:'SOP.MASTER CARR.',212:'ESTRIBO CAPO',213:'CINT.ANT.DCH/AIRBAG IZQ',214:'CINT.ANT.IZQ/AIRBAG DCH',215:'MOTOR LIMPIA',217:'MASAS LARG.IZQ/H.MOTOR',218:'MASA BORNE/T.FRENO SUP',219:'TUBOS FRENO INF',220:'MASA BAT.PISO',221:'GRC802Y',227:'TRANSF.BATERIA',230:'CONSOLA MOTOR',233:'ANILLA CARGA DCH/MASA CONS',234:'TIRANTE CONS/CINT.ANT.IZQ',236:'ANILLA CARGA IZQ/CINT.DCH',243:'GRCZP6A'};
+const TACTOS_TR34=[207,211,212,213,214,215,217,218,219,220,221,227,230,233,234,236,243];
+const TACTOS=window.TR2?[]:TACTOS_TR34.slice();
+const TN_MAP=window.TR2?{}:{207:'SOP.MASTER ABS',211:'SOP.MASTER CARR.',212:'ESTRIBO CAPO',213:'CINT.ANT.DCH/AIRBAG IZQ',214:'CINT.ANT.IZQ/AIRBAG DCH',215:'MOTOR LIMPIA',217:'MASAS LARG.IZQ/H.MOTOR',218:'MASA BORNE/T.FRENO SUP',219:'TUBOS FRENO INF',220:'MASA BAT.PISO',221:'GRC802Y',227:'TRANSF.BATERIA',230:'CONSOLA MOTOR',233:'ANILLA CARGA DCH/MASA CONS',234:'TIRANTE CONS/CINT.ANT.IZQ',236:'ANILLA CARGA IZQ/CINT.DCH',243:'GRCZP6A'};
 const TN=t=>TN_MAP[t]?`${t}·${TN_MAP[t]}`:t;
 const WEEKS=53, TAKT=1.12;
-const PRELOAD_ANN={7:{t103:5.16,t102:0.24,t101:8.42},8:{t103:6.55,t102:0.38,t101:8.05},9:{t103:9.06,t102:0.25,t101:7.53},10:{t103:7.31,t102:0.38,t101:8.21},11:{t103:11.36,t102:0.19,t101:6.33}};
-const PRELOAD_TACTO={12:{207:{t103:[0,0.01,0.02,0,0],t102:[0,0,0,0,0],t101:[0,0,0,0,0]},211:{t103:[1.18,0.07,0.06,0,0],t102:[0,0,0,0,0],t101:[0,0.15,0,0,0]},212:{t103:[0.21,0,0.03,0,0],t102:[0,0,0,0,0],t101:[0.04,0.1,0.1,0,0]},213:{t103:[0,0.32,0,0,0],t102:[0,0,0,0,0],t101:[0,0.14,0,0,0]},214:{t103:[0,0.06,0.22,0,0],t102:[0,0,0.02,0,0],t101:[0.07,0,0.01,0,0]},215:{t103:[0.28,0.07,0.03,0,0],t102:[0,0,0,0,0],t101:[0.02,0.07,0.09,0,0]},217:{t103:[0.08,0.1,0.06,0,0],t102:[0,0,0,0,0],t101:[0.13,0.17,0.09,0,0]},218:{t103:[0.04,0.1,0,0,0],t102:[0,0,0,0,0],t101:[0.18,0.02,0.03,0,0]},219:{t103:[0.01,0.02,0.08,0,0],t102:[0,0,0,0,0],t101:[0.06,0.17,0.08,0,0]},220:{t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0.01,0,0.02,0,0]},227:{t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0,0.08,0.01,0,0]},230:{t103:[0.15,0.14,0.01,0,0],t102:[0,0.08,0.19,0,0],t101:[0.05,0.02,0,0,0]},233:{t103:[0.09,0,0,0,0],t102:[0.02,0,0,0,0],t101:[0,0,0,0,0]},234:{t103:[0,0.03,0.03,0,0],t102:[0,0,0,0,0],t101:[0,0.02,0.02,0,0]},236:{t103:[0.09,0.18,0,0,0],t102:[0.05,0,0,0,0],t101:[0.01,0.05,0.18,0,0]}}};
+try{if(window.TR2)_aplicarTactosTR2(JSON.parse(localStorage.getItem(LSK('paros_tactos'))||'{}'));}catch(e){}
+const PRELOAD_ANN=window.TR2?{}:{7:{t103:5.16,t102:0.24,t101:8.42},8:{t103:6.55,t102:0.38,t101:8.05},9:{t103:9.06,t102:0.25,t101:7.53},10:{t103:7.31,t102:0.38,t101:8.21},11:{t103:11.36,t102:0.19,t101:6.33}};
+const PRELOAD_TACTO=window.TR2?{}:{12:{207:{t103:[0,0.01,0.02,0,0],t102:[0,0,0,0,0],t101:[0,0,0,0,0]},211:{t103:[1.18,0.07,0.06,0,0],t102:[0,0,0,0,0],t101:[0,0.15,0,0,0]},212:{t103:[0.21,0,0.03,0,0],t102:[0,0,0,0,0],t101:[0.04,0.1,0.1,0,0]},213:{t103:[0,0.32,0,0,0],t102:[0,0,0,0,0],t101:[0,0.14,0,0,0]},214:{t103:[0,0.06,0.22,0,0],t102:[0,0,0.02,0,0],t101:[0.07,0,0.01,0,0]},215:{t103:[0.28,0.07,0.03,0,0],t102:[0,0,0,0,0],t101:[0.02,0.07,0.09,0,0]},217:{t103:[0.08,0.1,0.06,0,0],t102:[0,0,0,0,0],t101:[0.13,0.17,0.09,0,0]},218:{t103:[0.04,0.1,0,0,0],t102:[0,0,0,0,0],t101:[0.18,0.02,0.03,0,0]},219:{t103:[0.01,0.02,0.08,0,0],t102:[0,0,0,0,0],t101:[0.06,0.17,0.08,0,0]},220:{t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0.01,0,0.02,0,0]},227:{t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0,0.08,0.01,0,0]},230:{t103:[0.15,0.14,0.01,0,0],t102:[0,0.08,0.19,0,0],t101:[0.05,0.02,0,0,0]},233:{t103:[0.09,0,0,0,0],t102:[0.02,0,0,0,0],t101:[0,0,0,0,0]},234:{t103:[0,0.03,0.03,0,0],t102:[0,0,0,0,0],t101:[0,0.02,0.02,0,0]},236:{t103:[0.09,0.18,0,0,0],t102:[0.05,0,0,0,0],t101:[0.01,0.05,0.18,0,0]}}};
 
 let data={},annData={},curWeek=12;
 window._accessLog=window._accessLog||{};
@@ -1180,7 +1243,7 @@ function calcChartWeek(){
 
 /* ══ DATA ══ */
 function initData(){
-  const s=localStorage.getItem('paros_v3');
+  const s=localStorage.getItem(LSK('paros_v3'));
   if(s){try{
     const p=JSON.parse(s);
     data=fixKeys(p.data||{});annData=fixKeys(p.annData||{});
@@ -1216,13 +1279,13 @@ function initData(){
       migrated=true;
     }
   }
-  if(migrated&&!localStorage.getItem('paros_migrated_246')){
-    localStorage.setItem('paros_migrated_246','1');
+  if(migrated&&!localStorage.getItem(LSK('paros_migrated_246'))){
+    localStorage.setItem(LSK('paros_migrated_246'),'1');
   }
 }
 
 function persist(){
-  localStorage.setItem('paros_v3',JSON.stringify({data,annData,curWeek,paradasData:window._paradasData||{},pdfHistory:window._pdfHistory||{},accessLog:window._accessLog||{}}));
+  localStorage.setItem(LSK('paros_v3'),JSON.stringify({data,annData,curWeek,paradasData:window._paradasData||{},pdfHistory:window._pdfHistory||{},accessLog:window._accessLog||{}}));
   if(window.fbSave)window.fbSave({data:JSON.stringify(data),annData:JSON.stringify(annData),curWeek,paradasData:JSON.stringify(window._paradasData||{}),pdfHistory:JSON.stringify(window._pdfHistory||{}),accessLog:JSON.stringify(window._accessLog||{})});
 }
 
@@ -1230,6 +1293,7 @@ async function loadFromFirebase(){
   if(!window.fbLoad)return false;
   const r=await window.fbLoad();if(!r)return false;
   try{
+    cargarTactos(r);
     if(r.data){const d=JSON.parse(r.data);if(d&&Object.keys(d).length>0)data=fixKeys(d);}
     if(r.annData){const a=JSON.parse(r.annData);if(a&&Object.keys(a).length>0)annData=fixKeys(a);}
     if(r.curWeek)curWeek=r.curWeek;
@@ -1959,7 +2023,7 @@ function closeYearModal(e){if(!e||e.target===document.getElementById('yearModal'
 
 /* ══ SAVE / REVERTIR ══ */
 function saveWeek(){
-  localStorage.setItem('paros_v3_backup',JSON.stringify({data:JSON.stringify(data),annData:JSON.stringify(annData),curWeek}));
+  localStorage.setItem(LSK('paros_v3_backup'),JSON.stringify({data:JSON.stringify(data),annData:JSON.stringify(annData),curWeek}));
   const btn=document.getElementById('btnRevertir');if(btn)btn.classList.add('red');
   const{s3,s2,s1}=weekSecs(curWeek);
   if(s3+s2+s1>0){annData[curWeek]={t103:secToMs(s3),t102:secToMs(s2),t101:secToMs(s1)};}
@@ -1970,7 +2034,7 @@ function saveWeek(){
 }
 
 function revertirSemana(){
-  const backup=localStorage.getItem('paros_v3_backup');
+  const backup=localStorage.getItem(LSK('paros_v3_backup'));
   if(!backup){showToast('❌ No hay copia de seguridad');return;}
   if(!confirm('¿Revertir al estado anterior al último GUARDAR?'))return;
   try{
@@ -1979,7 +2043,7 @@ function revertirSemana(){
     for(let w=1;w<=WEEKS;w++){if(PRELOAD_ANN[w])annData[w]={...PRELOAD_ANN[w]};}
     persist();document.getElementById('wkSel').value=curWeek;changeWeek(curWeek);drawChart();
     const btn=document.getElementById('btnRevertir');if(btn)btn.classList.remove('red');
-    showToast('↩ Revertido');localStorage.removeItem('paros_v3_backup');
+    showToast('↩ Revertido');localStorage.removeItem(LSK('paros_v3_backup'));
   }catch(e){showToast('❌ Error al revertir');}
 }
 
@@ -2130,7 +2194,7 @@ function parsePDFData(text,turno){
   for(const regex of patterns){
     let m;regex.lastIndex=0;
     while((m=regex.exec(text))!==null){
-      const tacto=parseInt(m[1]);if(!TACTOS.includes(tacto))continue;
+      const tacto=parseInt(m[1]);if(!TACTOS.includes(tacto)){if(!window.TR2||TACTOS_TR34.includes(tacto))continue;let nom=m[0].slice(m[0].indexOf('Tacto'));nom=nom.slice(nom.indexOf(m[1])+m[1].length,nom.indexOf(m[2])).replace(/[^A-Za-zÁÉÍÓÚÑáéíóúñ0-9.\/ -]/g,' ').trim();nuevoTacto(tacto,/[A-Za-z]{2}/.test(nom)?nom:'');}
       const parts=m[2].split(':').map(Number);
       const totalSecs=(parts.length===3?parts[0]*3600:0)+parts[parts.length-2]*60+parts[parts.length-1];
       const mmss=parseFloat(`${Math.floor(totalSecs/60)}.${String(totalSecs%60).padStart(2,'0')}`);
@@ -2540,15 +2604,16 @@ async function init(){
   const loaded=await loadFromFirebase();
   if(loaded){
     for(let w=1;w<=WEEKS;w++){if(PRELOAD_ANN[w])annData[w]={...PRELOAD_ANN[w]};if(!data[w])data[w]={};TACTOS.forEach(t=>{if(!data[w][t])data[w][t]={t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0,0,0,0,0]};});}
-    localStorage.setItem('paros_v3',JSON.stringify({data,annData,curWeek,paradasData:window._paradasData||{},pdfHistory:window._pdfHistory||{},accessLog:window._accessLog||{}}));
+    localStorage.setItem(LSK('paros_v3'),JSON.stringify({data,annData,curWeek,paradasData:window._paradasData||{},pdfHistory:window._pdfHistory||{},accessLog:window._accessLog||{}}));
     showToast('✓ Datos actualizados desde la nube');
   }else{showToast('⚠ Sin conexión — datos locales');}
   curWeek=ultimaSemanaConDatos();
   document.getElementById('wkSel').value=curWeek;
   aplicarNombres();
   changeWeek(curWeek);drawChart();drawParadasChart();renderAccessLog();loadFestivos(null);
-  if(localStorage.getItem('paros_v3_backup')){const btn=document.getElementById('btnRevertir');if(btn)btn.classList.add('red');}
+  if(localStorage.getItem(LSK('paros_v3_backup'))){const btn=document.getElementById('btnRevertir');if(btn)btn.classList.add('red');}
   if(window.fbListen){window.fbListen(remote=>{try{
+    cargarTactos(remote);
     if(remote.data){const d=JSON.parse(remote.data);if(d&&Object.keys(d).length>0)data=fixKeys(d);}
     if(remote.annData){const a=JSON.parse(remote.annData);if(a&&Object.keys(a).length>0)annData=fixKeys(a);}
     if(remote.accessLog){try{mergeAccessLogs(JSON.parse(remote.accessLog)||{});}catch(e){}}
@@ -2562,6 +2627,12 @@ async function init(){
 }
 
 /* ══ PANTALLA BIENVENIDA ══ */
+document.addEventListener('DOMContentLoaded',()=>{
+  if(window.TR2)document.body.classList.add('tr2');
+  const tt=document.getElementById('hdrTramo');if(tt)tt.textContent=(window.TR2?'TRAMO 2':'TRAMO 3/4')+' ⇄';
+  let u=null;try{u=sessionStorage.getItem('paros_entra');sessionStorage.removeItem('paros_entra');}catch(e){}
+  if(u)setTimeout(()=>wsEnter(u),50);
+});
 let _currentUser = null;
 const WS_NAMES = {get temez(){return nmT('tz');},get '103'(){return nmT('103');},get '102'(){return nmT('102');},get '101'(){return nmT('101');},'invitado':'Invitado','admin':'Admin'};
 const ADMIN_PASS_WS = 'ramal2';
@@ -2579,6 +2650,16 @@ function wsCheckAdmin(){
   else{err.style.display='block';document.getElementById('wsAdminPass').value='';}
 }
 
+function wsTramo(tr,user){
+  const quiero=tr==='2';
+  if(quiero!==!!window.TR2){try{sessionStorage.setItem('paros_tramo',quiero?'2':'34');sessionStorage.setItem('paros_entra',user);}catch(e){}
+    const u=new URL(location.href);u.searchParams.delete('tramo');location.replace(u.toString());return;}
+  wsEnter(user);
+}
+function cambiarTramo(){
+  try{sessionStorage.setItem('paros_tramo',window.TR2?'34':'2');if(_currentUser)sessionStorage.setItem('paros_entra',_currentUser);}catch(e){}
+  const u=new URL(location.href);u.searchParams.delete('tramo');location.replace(u.toString());
+}
 function wsEnter(user){
   _currentUser=user;
   localStorage.setItem('paros_user',user);
@@ -2624,12 +2705,12 @@ function updateMsgPermissions(){
 }
 
 async function saveKpiMsg(key,text){
-  const msgs=JSON.parse(localStorage.getItem('paros_kpi_msgs')||'{}');
+  const msgs=JSON.parse(localStorage.getItem(LSK('paros_kpi_msgs'))||'{}');
   const now=new Date();
   const pad=n=>String(n).padStart(2,'0');
   msgs[key]={text,author:WS_NAMES[_currentUser]||_currentUser,
     time:`${pad(now.getDate())}/${pad(now.getMonth()+1)} ${pad(now.getHours())}:${pad(now.getMinutes())}`};
-  localStorage.setItem('paros_kpi_msgs',JSON.stringify(msgs));
+  localStorage.setItem(LSK('paros_kpi_msgs'),JSON.stringify(msgs));
   if(window.fbSave)await window.fbSave({kpiMessages:JSON.stringify(msgs)});
   renderKpiMessages(msgs);
   const idMap={tot:'msgTot',T103:'msgT103',T102:'msgT102',T101:'msgT101',103:'msg103',102:'msg102',101:'msg101'};
@@ -2665,7 +2746,7 @@ async function loadKpiMessages(){
     if(r&&r.kpiMessages){try{msgs=JSON.parse(r.kpiMessages);}catch(e){}}
   }
   if(!Object.keys(msgs).length){
-    try{msgs=JSON.parse(localStorage.getItem('paros_kpi_msgs')||'{}');}catch(e){}
+    try{msgs=JSON.parse(localStorage.getItem(LSK('paros_kpi_msgs'))||'{}');}catch(e){}
   }
   renderKpiMessages(msgs);
 }
@@ -2793,11 +2874,11 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ══ GRUPO DE CADA ATORNILLADOR (dato interno; solo admin lo edita) ══ */
-const GRUPOS_ML2=['9','11','12','13','15','16','17'];
+const GRUPOS_ML2=window.TR2?['9','11','12']:['13','15','16','17'];
 const TRAMO_GRUPO={'13':'TR3/4','15':'TR3/4','16':'TR3/4','17':'TR3/4','9':'TR2','11':'TR2','12':'TR2'};
 function tramoDeTacto(t){return TRAMO_GRUPO[grupoDeTacto(t)]||'';}
 let _gruposTacto={};
-try{_gruposTacto=JSON.parse(localStorage.getItem('paros_grupos')||'{}')||{};}catch(e){}
+try{_gruposTacto=JSON.parse(localStorage.getItem(LSK('paros_grupos'))||'{}')||{};}catch(e){}
 function grupoDeTacto(t){return _gruposTacto[t]||'';}
 function abrirGrupos(){
   if(_currentUser!=='admin')return;
@@ -2805,17 +2886,24 @@ function abrirGrupos(){
     return `<div class="gr-row${g?' con':''}"><b>${t}</b><span>${TN_MAP[t]||''}</span><i>${TRAMO_GRUPO[g]||''}</i><select data-t="${t}" onchange="this.parentNode.classList.toggle('con',!!this.value);this.previousElementSibling.textContent=TRAMO_GRUPO[this.value]||''"><option value="">—</option>${GRUPOS_ML2.map(x=>`<option value="${x}"${x===g?' selected':''}>GRUPO ${x}</option>`).join('')}</select></div>`;}).join('');
   document.getElementById('grModal').classList.add('open');
 }
+function anadirCargaTR2(){
+  const n=parseInt(document.getElementById('grNum').value),nom=document.getElementById('grNom').value;
+  if(!n){showToast('⚠ Pon el número del tacto');return;}
+  if(TACTOS_TR34.includes(n)){showToast('⚠ Ese tacto es de TRAMO 3/4');return;}
+  nuevoTacto(n,nom);document.getElementById('grNum').value='';document.getElementById('grNom').value='';
+  persist();abrirGrupos();showToast('✓ Carga '+n+' añadida');
+}
 function cerrarGrupos(){document.getElementById('grModal').classList.remove('open');}
 async function guardarGrupos(){
   if(_currentUser!=='admin')return;
   const n={};document.querySelectorAll('#grLista select').forEach(s=>{if(s.value)n[s.dataset.t]=s.value;});
-  _gruposTacto=n;localStorage.setItem('paros_grupos',JSON.stringify(n));
+  _gruposTacto=n;localStorage.setItem(LSK('paros_grupos'),JSON.stringify(n));
   if(window.fbSave)await window.fbSave({gruposTacto:JSON.stringify(n)});
   cerrarGrupos();showToast('✓ Grupos guardados');
 }
 function cargarGrupos(remote){
   if(!remote||!remote.gruposTacto)return;
-  try{_gruposTacto=JSON.parse(remote.gruposTacto)||{};localStorage.setItem('paros_grupos',JSON.stringify(_gruposTacto));}catch(e){}
+  try{_gruposTacto=JSON.parse(remote.gruposTacto)||{};localStorage.setItem(LSK('paros_grupos'),JSON.stringify(_gruposTacto));}catch(e){}
 }
 
 /* ══ VACACIONES: semanas que no salen en las gráficas ══ */

@@ -431,11 +431,6 @@ body.es-admin #btnNombres{display:inline-flex;}
 .wk-ley em{display:inline-block;width:14px;height:10px;border:1px solid #3aa6e0;margin-right:5px;vertical-align:middle;}
 .vac-aviso{display:none;font-family:Oswald,sans-serif;font-size:12px;letter-spacing:.1em;color:#7fd0ff;}
 body.sem-vac .vac-aviso{display:inline;}
-.obj-ley{display:flex;flex-wrap:wrap;gap:6px 22px;justify-content:flex-end;padding:0 4px 8px;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:.06em;}
-.obj-ley span{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;}
-.obj-ley i{display:inline-block;width:22px;height:0;border-top:2px dashed currentColor;}
-.obj-ley b{color:var(--text);font-weight:600;}
-@media(max-width:700px){.obj-ley{font-size:11px;gap:4px 14px;justify-content:flex-start;}.obj-ley i{width:16px;}}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
 #ml2-escudo canvas{width:100%;height:100%;display:block;}
 #ml2-escudo.fin canvas{filter:drop-shadow(0 0 9px rgba(255,150,70,.6));transition:filter 1.2s;}
@@ -688,7 +683,6 @@ body.sem-vac .vac-aviso{display:inline;}
     </div>
     <!-- FIX: posición relativa para el tooltip -->
     <div id="chartTooltip" style="position:fixed;display:none;background:#1C1C1C;border:1px solid var(--orange);padding:5px 10px;font-family:Oswald,sans-serif;font-size:12px;color:#EEE;pointer-events:none;z-index:999;border-radius:2px;white-space:nowrap;"></div>
-    <div class="obj-ley" id="objLeyenda"></div>
     <div style="position:relative;">
       <svg id="annSvg" style="width:100%;display:block;cursor:crosshair;" viewBox="0 0 1100 180"
            preserveAspectRatio="xMidYMid meet"
@@ -1453,14 +1447,15 @@ function drawChart(){
 
   // ── Líneas objetivo — diagonales según días festivos ──
   const WEEK_CAMBIO = WEEK_CAMBIO_OBJ;
-  svg._lblY=[];svg._ley=[];
+  svg._lblY=[];
 
   function dibujarLineaObjDiagonal(fn,color,dash,sw,label,xStartWeek,xEndWeek){
-    const pts=[];let we=0;
+    const pts=[];let we=0,w0=0;
     for(let j=viewStart;j<=viewEnd;j++){
       const w=SW[j];if(w<xStartWeek||w>xEndWeek)continue;
       const v=fn(w);we=w;
       if(v>maxV)continue;
+      if(!w0)w0=w;
       pts.push({x:xPos(j),y:yPos(v)});
     }
     if(pts.length<2){
@@ -1477,13 +1472,16 @@ function drawChart(){
     pl.setAttribute('stroke-width',sw);pl.setAttribute('stroke-dasharray',dash);
     pl.setAttribute('stroke-linejoin','round');svg.appendChild(pl);
     const ot=document.createElementNS('http://www.w3.org/2000/svg','text');
-    ot.setAttribute('display','none');
+    const p0=pts[0];let ly=p0.y-5;const usados=svg._lblY||(svg._lblY=[]);
+    while(usados.some(u=>Math.abs(u-ly)<13))ly-=13;usados.push(ly);
+    ot.setAttribute('x',Math.max(p0.x,PL)+6);ot.setAttribute('y',ly);ot.setAttribute('text-anchor','start');ot.setAttribute('font-size','10.5');
     ot.setAttribute('fill',color);ot.setAttribute('font-family','Oswald');
-    ot.setAttribute('font-size','9');ot.setAttribute('font-weight','700');
-    const valSem=fn(we);
+    ot.setAttribute('font-weight','700');
+    const valSem=fn(w0||we);
     const totSec=Math.round(valSem*60);
     const mmL=Math.floor(totSec/60),ssL=totSec%60;
-    (svg._ley=svg._ley||[]).push(`<span style="color:${color}"><i></i>${label} <b>${mmL}:${String(ssL).padStart(2,'0')}</b></span>`);
+    ot.textContent=`${label} ${mmL}:${String(ssL).padStart(2,'0')}`;svg.appendChild(ot);
+    try{const bb=ot.getBBox();if(bb.width){const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');bg.setAttribute('x',bb.x-4);bg.setAttribute('y',bb.y-1);bg.setAttribute('width',bb.width+8);bg.setAttribute('height',bb.height+2);bg.setAttribute('fill','#0b1624');bg.setAttribute('fill-opacity','.9');svg._objTxt=(svg._objTxt||[]);svg._objTxt.push([bg,ot]);}}catch(e){}
   }
 
   // OBJ TURNOS (Antonio/José) — diagonal según festivos (unión 102+101)
@@ -1499,7 +1497,7 @@ function drawChart(){
   // OBJ FELIX — diagonal, desde semana 25, prorrateado por festivos
   dibujarLineaObjDiagonal(objFelixSemanaG,'var(--t103)','3,3','1.3','OBJ '+nm('103'),WEEK_CAMBIO,WEEKS);
 
-  {const le=document.getElementById('objLeyenda');if(le)le.innerHTML=svg._ley.join('');}
+  const _objTxt=svg._objTxt||[];svg._objTxt=[];
   // Línea vertical: chartWeek (semana visible en la gráfica)
   const cx=xPos(Math.max(viewStart,cwI-1));
   const vl=document.createElementNS('http://www.w3.org/2000/svg','line');
@@ -1512,6 +1510,7 @@ function drawChart(){
   wlbl.setAttribute('font-weight','700');wlbl.setAttribute('font-size','10');wlbl.setAttribute('letter-spacing','1');
   wlbl.textContent=`S${String(chartWeek).padStart(2,'0')}`;svg.appendChild(wlbl);
 
+  _objTxt.forEach(([bg,ot])=>{svg.appendChild(bg);svg.appendChild(ot);});
   // Etiquetas eje X — solo rango visible
   const step=viewCount<=13?1:viewCount<=26?2:5;
   for(let i=viewStart;i<=viewEnd;i+=step){

@@ -705,7 +705,7 @@ body.es-admin #btnNombres{display:inline-flex;}
       </div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:4px 0 8px;">
         <div>
-          <div style="font-family:Oswald;font-weight:900;font-size:13px;color:var(--t103);margin-bottom:6px;border-bottom:2px solid var(--t103);padding-bottom:4px;">T103 · <span data-nm="103">FELIX</span></div>
+          <div style="font-family:Oswald;font-weight:900;font-size:13px;color:var(--t103);margin-bottom:6px;border-bottom:2px solid var(--t103);padding-bottom:4px;"><span data-nm-e="103">T103 · <span data-nm="103">FELIX</span></span></div>
           <div class="festivo-row" id="fest103">
             <div class="festivo-day" onclick="toggleFestivo('103',0)">LUN</div>
             <div class="festivo-day" onclick="toggleFestivo('103',1)">MAR</div>
@@ -715,7 +715,7 @@ body.es-admin #btnNombres{display:inline-flex;}
           </div>
         </div>
         <div>
-          <div style="font-family:Oswald;font-weight:900;font-size:13px;color:var(--t102);margin-bottom:6px;border-bottom:2px solid var(--t102);padding-bottom:4px;">T102 · <span data-nm="102">ANTONIO</span></div>
+          <div style="font-family:Oswald;font-weight:900;font-size:13px;color:var(--t102);margin-bottom:6px;border-bottom:2px solid var(--t102);padding-bottom:4px;"><span data-nm-e="102">T102 · <span data-nm="102">ANTONIO</span></span></div>
           <div class="festivo-row" id="fest102">
             <div class="festivo-day" onclick="toggleFestivo('102',0)">LUN</div>
             <div class="festivo-day" onclick="toggleFestivo('102',1)">MAR</div>
@@ -725,7 +725,7 @@ body.es-admin #btnNombres{display:inline-flex;}
           </div>
         </div>
         <div>
-          <div style="font-family:Oswald;font-weight:900;font-size:13px;color:var(--t101);margin-bottom:6px;border-bottom:2px solid var(--t101);padding-bottom:4px;">T101 · <span data-nm="101">JOSÉ</span></div>
+          <div style="font-family:Oswald;font-weight:900;font-size:13px;color:var(--t101);margin-bottom:6px;border-bottom:2px solid var(--t101);padding-bottom:4px;"><span data-nm-e="101">T101 · <span data-nm="101">JOSÉ</span></span></div>
           <div class="festivo-row" id="fest101">
             <div class="festivo-day" onclick="toggleFestivo('101',0)">LUN</div>
             <div class="festivo-day" onclick="toggleFestivo('101',1)">MAR</div>
@@ -741,21 +741,21 @@ body.es-admin #btnNombres{display:inline-flex;}
       <div class="ph"><div class="pt"><span>▶</span>Importar datos desde PDF ANDON</div></div>
       <div class="pdf-grid">
         <div class="pdf-zone" id="pdfZone103" ondragover="event.preventDefault();this.style.borderColor='var(--t103)'" ondragleave="this.style.borderColor=''" ondrop="handlePDFDrop(event,103)">
-          <div class="pdf-zone-lbl t103">TURNO 103 · <span data-nm="103">FELIX</span></div>
+          <div class="pdf-zone-lbl t103"><span data-nm-e="103">TURNO 103 · <span data-nm="103">FELIX</span></span></div>
           <div class="pdf-zone-sub">ARRASTRA O SELECCIONA PDF</div>
           <input type="file" id="pdfFile103" accept=".pdf" onchange="processPDF(103,this)">
           <button class="pdf-btn" onclick="document.getElementById('pdfFile103').click()">📄 SELECCIONAR PDF</button>
           <div class="pdf-status" id="pdfStatus103"></div>
         </div>
         <div class="pdf-zone" id="pdfZone102" ondragover="event.preventDefault();this.style.borderColor='var(--t102)'" ondragleave="this.style.borderColor=''" ondrop="handlePDFDrop(event,102)">
-          <div class="pdf-zone-lbl t102">TURNO 102 · <span data-nm="102">ANTONIO</span></div>
+          <div class="pdf-zone-lbl t102"><span data-nm-e="102">TURNO 102 · <span data-nm="102">ANTONIO</span></span></div>
           <div class="pdf-zone-sub">ARRASTRA O SELECCIONA PDF</div>
           <input type="file" id="pdfFile102" accept=".pdf" onchange="processPDF(102,this)">
           <button class="pdf-btn" onclick="document.getElementById('pdfFile102').click()">📄 SELECCIONAR PDF</button>
           <div class="pdf-status" id="pdfStatus102"></div>
         </div>
         <div class="pdf-zone" id="pdfZone101" ondragover="event.preventDefault();this.style.borderColor='var(--t101)'" ondragleave="this.style.borderColor=''" ondrop="handlePDFDrop(event,101)">
-          <div class="pdf-zone-lbl t101">TURNO 101 · <span data-nm="101">JOSÉ</span></div>
+          <div class="pdf-zone-lbl t101"><span data-nm-e="101">TURNO 101 · <span data-nm="101">JOSÉ</span></span></div>
           <div class="pdf-zone-sub">ARRASTRA O SELECCIONA PDF</div>
           <input type="file" id="pdfFile101" accept=".pdf" onchange="processPDF(101,this)">
           <button class="pdf-btn" onclick="document.getElementById('pdfFile101').click()">📄 SELECCIONAR PDF</button>
@@ -1222,9 +1222,9 @@ function updateInlineCrawler(t103,t102,t101,tot){
     <span style="font-size:11px;color:var(--orange);letter-spacing:2px;font-weight:700">SEMANA ${wk}</span>
     <span style="font-size:10px;color:#555;margin-left:8px">OBJ ≤5 min/turno</span></div>`;
   html+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
-    <div><span style="font-size:9px;color:var(--t103);letter-spacing:1px">103·${nm('103')}</span><br><span style="font-size:13px;color:${sc(t103)};font-weight:700">${f(t103)}m</span><span style="font-size:10px;color:#666"> ${fc(t103)}cch</span></div>
-    <div><span style="font-size:9px;color:var(--t102);letter-spacing:1px">102·${nm('102')}</span><br><span style="font-size:13px;color:${sc(t102)};font-weight:700">${f(t102)}m</span><span style="font-size:10px;color:#666"> ${fc(t102)}cch</span></div>
-    <div><span style="font-size:9px;color:var(--t101);letter-spacing:1px">101·${nm('101')}</span><br><span style="font-size:13px;color:${sc(t101)};font-weight:700">${f(t101)}m</span><span style="font-size:10px;color:#666"> ${fc(t101)}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t103);letter-spacing:1px">${etq('103')}</span><br><span style="font-size:13px;color:${sc(t103)};font-weight:700">${f(t103)}m</span><span style="font-size:10px;color:#666"> ${fc(t103)}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t102);letter-spacing:1px">${etq('102')}</span><br><span style="font-size:13px;color:${sc(t102)};font-weight:700">${f(t102)}m</span><span style="font-size:10px;color:#666"> ${fc(t102)}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t101);letter-spacing:1px">${etq('101')}</span><br><span style="font-size:13px;color:${sc(t101)};font-weight:700">${f(t101)}m</span><span style="font-size:10px;color:#666"> ${fc(t101)}cch</span></div>
     <div><span style="font-size:9px;color:var(--orange);letter-spacing:1px">${nm('tz')}</span><br><span style="font-size:14px;color:${sc(tot)};font-weight:900">${f(tot)}m</span><span style="font-size:10px;color:#666"> ${fc(tot)}cch</span></div>
   </div>`;
   const top5=TACTOS.map(t=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[t]?.t103?.[di]||0)+msToSec(data[curWeek]?.[t]?.t102?.[di]||0)+msToSec(data[curWeek]?.[t]?.t101?.[di]||0);});return{t,sec,v:secToMs(sec)};}).filter(x=>x.sec>0).sort((a,b)=>b.sec-a.sec).slice(0,5);
@@ -1710,7 +1710,7 @@ function drawPieChart(){
   const{s3,s2,s1}=weekSecs(curWeek);
   const total=s3+s2+s1;
   if(total===0){ctx.fillStyle='#16253a';ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();ctx.fillStyle='#6c7f99';ctx.font='bold 12px Oswald,sans-serif';ctx.textAlign='center';ctx.fillText('SIN DATOS',cx,cy);legend.innerHTML='';return;}
-  const slices=[{label:'103·'+nm('103'),val:s3,color:'#4f9cf5'},{label:'102·'+nm('102'),val:s2,color:'#a9b4c4'},{label:'101·'+nm('101'),val:s1,color:'#34d058'}].filter(s=>s.val>0);
+  const slices=[{label:etq('103'),val:s3,color:'#4f9cf5'},{label:etq('102'),val:s2,color:'#a9b4c4'},{label:etq('101'),val:s1,color:'#34d058'}].filter(s=>s.val>0);
   let startAngle=-Math.PI/2;
   slices.forEach(s=>{
     const angle=(s.val/total)*Math.PI*2;
@@ -2151,7 +2151,7 @@ function viewPDFEntry(person,wk,index){
   if(!entries||!entries[index])return;
   const f=entries[index];
   const trnColor={103:'var(--t103)',102:'var(--t102)',101:'var(--t101)'};
-  const trnLabel={103:'T103 · '+nm('103'),102:'T102 · '+nm('102'),101:'T101 · '+nm('101')};
+  const trnLabel={103:etq('103'),102:etq('102'),101:etq('101')};
   const turno=f.turno||(person==='felix'?103:person==='antonio'?102:101);
   const color=trnColor[turno]||'var(--orange)';
   const label=trnLabel[turno]||person.toUpperCase();
@@ -2521,11 +2521,13 @@ async function loadKpiMessages(){
 
 
 /* ══ NOMBRES EDITABLES (admin) ══ */
-const NM_DEF={tz:'TEMEZ','103':'FELIX','102':'ANTONIO','101':'JOSÉ'};
+const NM_DEF={tz:'RTF','103':'TURNO 103','102':'TURNO 102','101':'TURNO 101'};
 let NM={...NM_DEF};
 try{Object.assign(NM,JSON.parse(localStorage.getItem('paros_nombres')||'{}'));}catch(e){}
 function nm(k){return String(NM[k]||NM_DEF[k]||'').toUpperCase();}
-function nmT(k){const x=nm(k).toLowerCase();return x.charAt(0).toUpperCase()+x.slice(1);}
+function nmT(k){const u=nm(k);if(u.length<=3||/\d/.test(u))return u;const x=u.toLowerCase();return x.charAt(0).toUpperCase()+x.slice(1);}
+// etiqueta de turno sin repetir el número: "TURNO 103" o "103 · FELIX"
+function etq(k){const n=nm(k);return n.includes(k)?n:k+' · '+n;}
 function nmSinAcentos(x){return String(x||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').trim();}
 // nombre de fichero PDF → turno (vale el nombre actual y los antiguos)
 function nmMapaFichero(){
@@ -2542,7 +2544,8 @@ function nmClaveDe(u){
   return x;
 }
 function aplicarNombres(){
-  document.querySelectorAll('[data-nm]').forEach(el=>{el.textContent=nm(el.dataset.nm);});
+  document.querySelectorAll('[data-nm-e]').forEach(el=>{el.textContent=etq(el.dataset.nmE);});
+  document.querySelectorAll('[data-nm]').forEach(el=>{if(!el.closest('[data-nm-e]'))el.textContent=nm(el.dataset.nm);});
   document.querySelectorAll('[data-ph]').forEach(el=>{
     el.setAttribute('placeholder',el.dataset.ph.replace(/\{(\w+)\}/g,(_,k)=>k==='tzT'?nmT('tz'):nm(k)));
   });

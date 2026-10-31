@@ -1367,7 +1367,7 @@ function setParadasView(weeks){
 
 function drawChart(){
   const svg=document.getElementById('annSvg');svg.innerHTML='';
-  const W=1100,H=180,PL=42,PR=12,PT=16,PB=28,cW=W-PL-PR,cH=H-PT-PB;
+  const W=1100,H=180,PL=42,PR=150,PT=16,PB=28,cW=W-PL-PR,cH=H-PT-PB;
   const chartWeek=calcChartWeek(); // semana hasta la que se dibuja la gráfica
 
   // Calcular todos los puntos usando weekSecs() (que usa msToSec correctamente)
@@ -1448,6 +1448,8 @@ function drawChart(){
   // ── Líneas objetivo — diagonales según días festivos ──
   const WEEK_CAMBIO = WEEK_CAMBIO_OBJ;
   svg._lblY=[];
+  {const sep=document.createElementNS('http://www.w3.org/2000/svg','rect');sep.setAttribute('x',W-PR+6);sep.setAttribute('y',PT);sep.setAttribute('width',PR-6);sep.setAttribute('height',cH);sep.setAttribute('fill','rgba(194,119,58,.06)');svg.appendChild(sep);
+   const tt=document.createElementNS('http://www.w3.org/2000/svg','text');tt.setAttribute('x',W-PR+14);tt.setAttribute('y',PT+10);tt.setAttribute('fill','#8fa3bd');tt.setAttribute('font-family','Oswald');tt.setAttribute('font-size','10');tt.setAttribute('letter-spacing','1.5');tt.textContent='OBJETIVOS';svg.appendChild(tt);}
 
   function dibujarLineaObjDiagonal(fn,color,dash,sw,label,xStartWeek,xEndWeek){
     const pts=[];let we=0;
@@ -1473,9 +1475,9 @@ function drawChart(){
     const ot=document.createElementNS('http://www.w3.org/2000/svg','text');
     const pU=pts[pts.length-1];let ly=pU.y-4;const usados=svg._lblY||(svg._lblY=[]);
     while(usados.some(u=>Math.abs(u-ly)<11))ly-=11;usados.push(ly);
-    ot.setAttribute('x',pU.x-40);ot.setAttribute('y',ly);ot.setAttribute('text-anchor','end');
+    ot.setAttribute('x',W-PR+14);ot.setAttribute('y',ly+3);ot.setAttribute('text-anchor','start');ot.setAttribute('font-size','11');
     ot.setAttribute('fill',color);ot.setAttribute('font-family','Oswald');
-    ot.setAttribute('font-size','9');ot.setAttribute('font-weight','700');
+    ot.setAttribute('font-weight','700');
     const valSem=fn(we);
     const totSec=Math.round(valSem*60);
     const mmL=Math.floor(totSec/60),ssL=totSec%60;

@@ -1447,7 +1447,7 @@ function drawChart(){
 
   // ── Líneas objetivo — diagonales según días festivos ──
   const WEEK_CAMBIO = WEEK_CAMBIO_OBJ;
-  svg._lblY=[];
+  svg._lblY=[];svg._lblCajas=[];
 
   function dibujarLineaObjDiagonal(fn,color,dash,sw,label,xStartWeek,xEndWeek){
     const pts=[];let we=0,w0=0;
@@ -1472,16 +1472,15 @@ function drawChart(){
     pl.setAttribute('stroke-width',sw);pl.setAttribute('stroke-dasharray',dash);
     pl.setAttribute('stroke-linejoin','round');svg.appendChild(pl);
     const ot=document.createElementNS('http://www.w3.org/2000/svg','text');
-    const p0=pts[0];let ly=p0.y-5;const usados=svg._lblY||(svg._lblY=[]);
-    while(usados.some(u=>Math.abs(u-ly)<13))ly-=13;usados.push(ly);
-    ot.setAttribute('x',Math.max(p0.x,PL)+6);ot.setAttribute('y',ly);ot.setAttribute('text-anchor','start');ot.setAttribute('font-size','10.5');
+    const p0=pts[0];const ly=p0.y+3.8;
+    ot.setAttribute('x',Math.max(p0.x,PL)+28);ot.setAttribute('y',ly);ot.setAttribute('text-anchor','start');ot.setAttribute('font-size','10.5');
     ot.setAttribute('fill',color);ot.setAttribute('font-family','Oswald');
     ot.setAttribute('font-weight','700');
     const valSem=fn(w0||we);
     const totSec=Math.round(valSem*60);
     const mmL=Math.floor(totSec/60),ssL=totSec%60;
     ot.textContent=`${label} ${mmL}:${String(ssL).padStart(2,'0')}`;svg.appendChild(ot);
-    try{const bb=ot.getBBox();if(bb.width){const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');bg.setAttribute('x',bb.x-4);bg.setAttribute('y',bb.y-1);bg.setAttribute('width',bb.width+8);bg.setAttribute('height',bb.height+2);bg.setAttribute('fill','#0b1624');bg.setAttribute('fill-opacity','.9');svg._objTxt=(svg._objTxt||[]);svg._objTxt.push([bg,ot]);}}catch(e){}
+    try{let bb=ot.getBBox();const cajas=svg._lblCajas||(svg._lblCajas=[]);let mov=true,n=0;while(mov&&n++<10){mov=false;for(const c of cajas){if(Math.abs(c.y-bb.y)<12&&bb.x<c.x2+10&&bb.x+bb.width>c.x1-10){ot.setAttribute('x',c.x2+18);bb=ot.getBBox();mov=true;}}}cajas.push({x1:bb.x,x2:bb.x+bb.width,y:bb.y});if(bb.width){const bg=document.createElementNS('http://www.w3.org/2000/svg','rect');bg.setAttribute('x',bb.x-6);bg.setAttribute('y',bb.y-1);bg.setAttribute('width',bb.width+12);bg.setAttribute('height',bb.height+2);bg.setAttribute('fill','#0b1624');svg._objTxt=(svg._objTxt||[]);svg._objTxt.push([bg,ot]);}}catch(e){}
   }
 
   // OBJ TURNOS (Antonio/José) — diagonal según festivos (unión 102+101)

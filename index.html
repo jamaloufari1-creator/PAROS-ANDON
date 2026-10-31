@@ -370,8 +370,8 @@ body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;ba
 .wk-ley i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--cu);margin-right:5px;vertical-align:middle;}
 .wk-ley u{display:inline-block;width:14px;height:10px;outline:1px dashed var(--t101);margin-right:5px;vertical-align:middle;text-decoration:none;}
 /* ══ NOMBRES (admin) ══ */
-#btnNombres{display:none;}
-body.es-admin #btnNombres{display:inline-flex;}
+#btnNombres,#btnGrupos{display:none;}
+body.es-admin #btnNombres,body.es-admin #btnGrupos{display:inline-flex;}
 .nm-row{display:grid;grid-template-columns:150px 1fr;gap:10px;align-items:center;margin-bottom:10px;}
 .nm-row label{font-family:Michroma,Oswald,sans-serif;font-size:10px;letter-spacing:.1em;}
 .nm-in{font-family:Oswald,sans-serif;font-size:18px;letter-spacing:.06em;padding:8px 10px;width:100%;text-transform:uppercase;outline:none;}
@@ -447,6 +447,12 @@ body.sem-vac .vac-aviso{display:inline;}
 #wsScreen button:nth-child(5){--fc:rgba(143,163,189,.25);}
 #wsScreen button:nth-child(6){--fc:rgba(255,215,0,.45);}
 #wsAdminBox button{--fc:transparent;}
+.gr-row{display:grid;grid-template-columns:54px 1fr 110px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);font-family:Oswald,sans-serif;}
+.gr-row b{color:var(--cu2);font-size:16px;font-weight:600;}
+.gr-row span{color:var(--text);font-size:13px;letter-spacing:.04em;}
+.gr-row select{background:#101c2d;color:var(--text);border:1px solid rgba(194,119,58,.45);font-family:Oswald,sans-serif;font-size:14px;padding:5px 8px;outline:none;}
+.gr-row select:focus{border-color:var(--cu);}
+.gr-row.con select{color:#f0c49a;border-color:var(--cu);}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
 #ml2-escudo canvas{width:100%;height:100%;display:block;}
 #ml2-escudo.fin canvas{filter:drop-shadow(0 0 9px rgba(255,150,70,.6));transition:filter 1.2s;}
@@ -556,6 +562,7 @@ body.sem-vac .vac-aviso{display:inline;}
       <button class="wk-hoy" id="wkHoy" onclick="irSemanaActual()" title="Ir a la semana actual">HOY</button>
     </div>
     <button id="btnNombres" class="wk-hoy" onclick="abrirNombres()" style="align-items:center;">✎ NOMBRES</button>
+    <button id="btnGrupos" class="wk-hoy" onclick="abrirGrupos()" style="align-items:center;">GRUPOS</button>
     <button onclick="showYearModal()" style="background:#333;border:1px solid #555;color:#fff;cursor:pointer;font-family:Oswald,sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;padding:9px 16px;" class="wk-hoy">AÑO</button>
   </div>
 </header>
@@ -980,6 +987,23 @@ body.sem-vac .vac-aviso{display:inline;}
   </div>
 </div>
 
+<div class="modal-overlay" id="grModal" onclick="if(event.target===this)cerrarGrupos()">
+  <div class="modal" style="max-width:620px;">
+    <div class="modal-hdr">
+      <div class="modal-ttl">GRUPO DE CADA <span>ATORNILLADOR</span></div>
+      <button class="modal-close" onclick="cerrarGrupos()">✕ CERRAR</button>
+    </div>
+    <div class="modal-body" style="gap:4px;">
+      <div class="nm-nota">Solo lo ve el admin. La app lo guarda por dentro; no sale en ninguna pantalla.</div>
+      <div id="grLista"></div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:12px;">
+        <button class="btn-cancel-pdf" onclick="cerrarGrupos()">CANCELAR</button>
+        <button class="btn-act primary" onclick="guardarGrupos()">GUARDAR GRUPOS</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="nmModal" onclick="if(event.target===this)cerrarNombres()">
   <div class="modal" style="max-width:480px;">
     <div class="modal-hdr">
@@ -1210,7 +1234,7 @@ async function loadFromFirebase(){
     if(r.paradasData){try{window._paradasData=fixKeys(JSON.parse(r.paradasData));}catch(e){}}
     if(r.pdfHistory){try{window._pdfHistory=JSON.parse(r.pdfHistory);}catch(e){}}
     if(r.accessLog){try{window._accessLog=JSON.parse(r.accessLog)||{};}catch(e){}}
-    cargarNombres(r);cargarVacaciones(r);
+    cargarNombres(r);cargarVacaciones(r);cargarGrupos(r);
     return true;
   }catch(e){return false;}
 }
@@ -2530,6 +2554,7 @@ async function init(){
     if(remote.nombres&&remote.nombres!==JSON.stringify(NM)){cargarNombres(remote);aplicarNombres();}
     changeWeek(curWeek);renderAccessLog();
     if(remote.festivos)loadFestivos(remote);
+    cargarGrupos(remote);
     if(cargarVacaciones(remote)){drawChart();drawParadasChart();pintarSemana();pintarVacaciones();}
   }catch(e){}});}
 }
@@ -2759,11 +2784,35 @@ function abrirSemanas(){
 }
 function cerrarSemanas(){document.getElementById('wkPop').classList.remove('open');}
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){cerrarSemanas();cerrarNombres();}
+  if(e.key==='Escape'){cerrarSemanas();cerrarNombres();cerrarGrupos();}
   const t=e.target;if(t&&(t.isContentEditable||/INPUT|TEXTAREA|SELECT/.test(t.tagName)))return;
   if(e.key==='ArrowLeft')wkPaso(-1);
   if(e.key==='ArrowRight')wkPaso(1);
 });
+
+/* ══ GRUPO DE CADA ATORNILLADOR (dato interno; solo admin lo edita) ══ */
+const GRUPOS_ML2=['9','11','12','13','15','16','17'];
+let _gruposTacto={};
+try{_gruposTacto=JSON.parse(localStorage.getItem('paros_grupos')||'{}')||{};}catch(e){}
+function grupoDeTacto(t){return _gruposTacto[t]||'';}
+function abrirGrupos(){
+  if(_currentUser!=='admin')return;
+  document.getElementById('grLista').innerHTML=TACTOS.map(t=>{const g=grupoDeTacto(t);
+    return `<div class="gr-row${g?' con':''}"><b>${t}</b><span>${TN_MAP[t]||''}</span><select data-t="${t}" onchange="this.parentNode.classList.toggle('con',!!this.value)"><option value="">—</option>${GRUPOS_ML2.map(x=>`<option value="${x}"${x===g?' selected':''}>GRUPO ${x}</option>`).join('')}</select></div>`;}).join('');
+  document.getElementById('grModal').classList.add('open');
+}
+function cerrarGrupos(){document.getElementById('grModal').classList.remove('open');}
+async function guardarGrupos(){
+  if(_currentUser!=='admin')return;
+  const n={};document.querySelectorAll('#grLista select').forEach(s=>{if(s.value)n[s.dataset.t]=s.value;});
+  _gruposTacto=n;localStorage.setItem('paros_grupos',JSON.stringify(n));
+  if(window.fbSave)await window.fbSave({gruposTacto:JSON.stringify(n)});
+  cerrarGrupos();showToast('✓ Grupos guardados');
+}
+function cargarGrupos(remote){
+  if(!remote||!remote.gruposTacto)return;
+  try{_gruposTacto=JSON.parse(remote.gruposTacto)||{};localStorage.setItem('paros_grupos',JSON.stringify(_gruposTacto));}catch(e){}
+}
 
 /* ══ VACACIONES: semanas que no salen en las gráficas ══ */
 let _vacaciones={};

@@ -447,10 +447,12 @@ body.sem-vac .vac-aviso{display:inline;}
 #wsScreen button:nth-child(5){--fc:rgba(143,163,189,.25);}
 #wsScreen button:nth-child(6){--fc:rgba(255,215,0,.45);}
 #wsAdminBox button{--fc:transparent;}
-.gr-row{display:grid;grid-template-columns:54px 1fr 110px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);font-family:Oswald,sans-serif;}
+.gr-row{display:grid;grid-template-columns:54px 1fr 64px 110px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);font-family:Oswald,sans-serif;}
 .gr-row b{color:var(--cu2);font-size:16px;font-weight:600;}
 .gr-row span{color:var(--text);font-size:13px;letter-spacing:.04em;}
 .gr-row select{background:#101c2d;color:var(--text);border:1px solid rgba(194,119,58,.45);font-family:Oswald,sans-serif;font-size:14px;padding:5px 8px;outline:none;}
+.gr-row i{font-style:normal;font-family:Michroma,sans-serif;font-size:10px;letter-spacing:.08em;color:#8fa3bd;text-align:right;}
+.gr-row.con i{color:var(--cu2);}
 .gr-row select:focus{border-color:var(--cu);}
 .gr-row.con select{color:#f0c49a;border-color:var(--cu);}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
@@ -2792,13 +2794,15 @@ document.addEventListener('keydown',e=>{
 
 /* ══ GRUPO DE CADA ATORNILLADOR (dato interno; solo admin lo edita) ══ */
 const GRUPOS_ML2=['9','11','12','13','15','16','17'];
+const TRAMO_GRUPO={'13':'TR3/4','15':'TR3/4','16':'TR3/4','17':'TR3/4','9':'TR2','11':'TR2','12':'TR2'};
+function tramoDeTacto(t){return TRAMO_GRUPO[grupoDeTacto(t)]||'';}
 let _gruposTacto={};
 try{_gruposTacto=JSON.parse(localStorage.getItem('paros_grupos')||'{}')||{};}catch(e){}
 function grupoDeTacto(t){return _gruposTacto[t]||'';}
 function abrirGrupos(){
   if(_currentUser!=='admin')return;
   document.getElementById('grLista').innerHTML=TACTOS.map(t=>{const g=grupoDeTacto(t);
-    return `<div class="gr-row${g?' con':''}"><b>${t}</b><span>${TN_MAP[t]||''}</span><select data-t="${t}" onchange="this.parentNode.classList.toggle('con',!!this.value)"><option value="">—</option>${GRUPOS_ML2.map(x=>`<option value="${x}"${x===g?' selected':''}>GRUPO ${x}</option>`).join('')}</select></div>`;}).join('');
+    return `<div class="gr-row${g?' con':''}"><b>${t}</b><span>${TN_MAP[t]||''}</span><i>${TRAMO_GRUPO[g]||''}</i><select data-t="${t}" onchange="this.parentNode.classList.toggle('con',!!this.value);this.previousElementSibling.textContent=TRAMO_GRUPO[this.value]||''"><option value="">—</option>${GRUPOS_ML2.map(x=>`<option value="${x}"${x===g?' selected':''}>GRUPO ${x}</option>`).join('')}</select></div>`;}).join('');
   document.getElementById('grModal').classList.add('open');
 }
 function cerrarGrupos(){document.getElementById('grModal').classList.remove('open');}

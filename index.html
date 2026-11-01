@@ -498,6 +498,8 @@ body.tr2 .gr-nuevo{display:grid;}
 .nis-yo b{color:#c9d3df;font-weight:600;}
 .nis-yo a{color:var(--cu2);cursor:pointer;text-decoration:underline;margin-left:8px;}
 .al-quien{font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;color:var(--text2);margin-top:2px;}
+#wsCont{display:flex;flex-direction:column;align-items:center;}
+@media(min-width:701px){#wsCont .ws-tramos{width:880px;flex-wrap:nowrap;}}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
 #ml2-escudo canvas{width:100%;height:100%;display:block;}
 #ml2-escudo.fin canvas{filter:drop-shadow(0 0 9px rgba(255,150,70,.6));transition:filter 1.2s;}
@@ -527,6 +529,7 @@ body.tr2 .gr-nuevo{display:grid;}
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   font-family:Oswald,sans-serif;">
   <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 20% 50%,rgba(255,90,0,0.12),transparent 60%),radial-gradient(ellipse at 80% 50%,rgba(26,111,212,0.10),transparent 60%);pointer-events:none;"></div>
+  <div id="wsCont">
   <div id="ml2-escudo"><canvas></canvas></div>
   <div style="font-size:11px;letter-spacing:5px;color:#555;margin-bottom:8px;">SEAT · CUPRA · TALLER 8 · ML2</div>
   <div style="font-size:clamp(40px,6vw,72px);font-weight:900;color:#fff;line-height:1;text-align:center;letter-spacing:-1px;margin-bottom:4px;">PAROS <span style="color:var(--orange)">ANDON</span></div>
@@ -554,6 +557,7 @@ body.tr2 .gr-nuevo{display:grid;}
     <input id="wsAdminPass" type="password" placeholder="contraseña" style="background:#1a1a1a;border:1px solid #333;color:#fff;font-family:Oswald,sans-serif;font-size:16px;padding:10px 16px;outline:none;width:180px;text-align:center;letter-spacing:4px;" onkeydown="if(event.key==='Enter')wsCheckAdmin()">
     <button onclick="wsCheckAdmin()" style="margin-left:8px;padding:10px 20px;background:var(--orange);border:none;color:#fff;font-family:Oswald,sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;">OK</button>
     <div id="wsAdminErr" style="color:#E03030;font-size:11px;margin-top:6px;display:none;letter-spacing:1px;">Contraseña incorrecta</div>
+  </div>
   </div>
 </div>
 
@@ -2762,6 +2766,7 @@ function wsEnter(user){
   // Start access session now that user is identified
   startAccessSession();
   showToast(`✓ Bienvenido/a — ${WS_NAMES[user]||user}`);
+  setTimeout(()=>{try{ajustarZoomAndon();drawChart();drawParadasChart();}catch(e){}},330);
 }
 
 function updateMsgPermissions(){
@@ -3072,14 +3077,23 @@ window.addEventListener('scroll',()=>touchAccessSession(false),{passive:true});
 setInterval(renderAccessLog,5000);
 </script>
 <script>
-/* 01/11 (Jamal): en monitores grandes la app se veía pequeña. Se ve igual que en una pantalla de 1440 px y se amplía
-   en proporción al ancho (nada cambia de sitio). En el móvil y en pantallas pequeñas, como siempre. */
+/* 01/11 (Jamal): en PC la app se veía pequeña, sobre todo el inicio dentro de ML2 Crew.
+   Inicio: se amplía hasta llenar la pantalla. Resto: se ve como en 1440 px y se amplía en proporción al ancho.
+   Móvil (≤700 px): como siempre. */
 function ajustarZoomAndon(){
-  const W=window.innerWidth,r=document.documentElement;
+  const W=window.innerWidth,H=window.innerHeight,r=document.documentElement;
+  const ws=document.getElementById('wsScreen'),c=document.getElementById('wsCont');
+  const enInicio=!!ws&&ws.style.display!=='none';
   let z=1;if(W>1440)z=Math.min(1.8,W/1440);
-  r.style.zoom=z===1?'':String(z);
+  r.style.zoom=(enInicio||z===1)?'':String(z);
+  if(c){
+    c.style.zoom='';
+    if(enInicio&&W>700){const b=c.getBoundingClientRect();if(b.height){const k=Math.max(.6,Math.min(1.8,(H-40)/b.height,(W-32)/b.width));c.style.zoom=String(Math.round(k*100)/100);}}
+  }
 }
 ajustarZoomAndon();
+window.addEventListener('load',ajustarZoomAndon);
+try{document.fonts.ready.then(ajustarZoomAndon);}catch(e){}
 let _zoomT=null;
 window.addEventListener('resize',()=>{clearTimeout(_zoomT);_zoomT=setTimeout(()=>{const a=document.documentElement.style.zoom;ajustarZoomAndon();if(document.documentElement.style.zoom!==a){try{drawChart();drawParadasChart();}catch(e){}}},150);});
 </script>

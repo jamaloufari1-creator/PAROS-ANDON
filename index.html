@@ -1217,7 +1217,14 @@ function semColorTurno(v,w,turno){return v<=objTurnoSemanaG(w,turno)?'verde':'ro
 function semColorFelix(v,w){return v<=objFelixSemanaG(w)?'verde':'rojo';}
 function semColorTemez(v,w){return v<=objTemezSemanaG(w)?'verde':'rojo';}
 function setSem(id,v){const el=document.getElementById(id);if(!el)return;el.className='sem-dot'+(v>0?' '+semColor(v):'');}
-function cochesStr(v){return v>0?`<strong>${Math.round(msToSec(v)/60/TAKT)}</strong> coches perd.`:'— coches';}
+const RTF_GRUPOS=['13','15','16','17'];
+function taktSeg(k,w){k=String(k).replace('t','');w=+w;return k==='103'?(w<=24?69:132):k==='102'?(w<=13?132:69):69;}
+function cuentaCoches(t){return !window.TR2&&RTF_GRUPOS.includes(String(grupoDeTacto(t)||''));}
+function cochesDec(tactos,k,weeks){k=String(k).replace('t','');let c=0;weeks.forEach(w=>tactos.forEach(t=>{if(!cuentaCoches(t))return;(data[w]?.[t]?.['t'+k]||[]).forEach(v=>{const s=msToSec(v||0);if(s>0)c+=s/taktSeg(k,w);});}));return c;}
+function cochesN(tactos,k,weeks){return Math.round(cochesDec(tactos,k,weeks));}
+function cochesTot(tactos,weeks){return ['103','102','101'].reduce((a,k)=>a+cochesN(tactos,k,weeks),0);}
+const SEMS_ANO=Array.from({length:53},(_,i)=>i+1);
+function cochesStr(n){return n>0?`<strong>${n}</strong> coches perd.`:'— coches';}
 function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2800);}
 function setWkPills(){['wkPill','top5Pill','ligaPill','turnoPill','paradasPill'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=`S${String(curWeek).padStart(2,'0')}`;});}
 function fixKeys(obj){
@@ -1449,10 +1456,10 @@ function updateKPIs(){
   document.getElementById('sem102').className='sem-dot'+(t2>0?' '+semColorTurno(t2,curWeek,'102'):'');
   document.getElementById('sem101').className='sem-dot'+(t1>0?' '+semColorTurno(t1,curWeek,'101'):'');
   const dt=document.getElementById('semtot');if(dt)dt.className='sem-dot'+(tot>0?' '+semTot:'');
-  document.getElementById('kc103').innerHTML=cochesStr(t3);
-  document.getElementById('kc102').innerHTML=cochesStr(t2);
-  document.getElementById('kc101').innerHTML=cochesStr(t1);
-  document.getElementById('kctot').innerHTML=cochesStr(tot);
+  document.getElementById('kc103').innerHTML=cochesStr(cochesN(TACTOS,'103',[curWeek]));
+  document.getElementById('kc102').innerHTML=cochesStr(cochesN(TACTOS,'102',[curWeek]));
+  document.getElementById('kc101').innerHTML=cochesStr(cochesN(TACTOS,'101',[curWeek]));
+  document.getElementById('kctot').innerHTML=cochesStr(cochesTot(TACTOS,[curWeek]));
   updateTicker(t3,t2,t1,tot);
   updateInlineCrawler(t3,t2,t1,tot);
 }
@@ -1470,10 +1477,10 @@ function updateInlineCrawler(t103,t102,t101,tot){
     <span style="font-size:11px;color:var(--orange);letter-spacing:2px;font-weight:700">SEMANA ${wk}</span>
     <span style="font-size:10px;color:#555;margin-left:8px">OBJ ≤5 min/turno</span></div>`;
   html+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
-    <div><span style="font-size:9px;color:var(--t103);letter-spacing:1px">${etq('103')}</span><br><span style="font-size:13px;color:${sc(t103)};font-weight:700">${f(t103)}m</span><span style="font-size:10px;color:#666"> ${fc(t103)}cch</span></div>
-    <div><span style="font-size:9px;color:var(--t102);letter-spacing:1px">${etq('102')}</span><br><span style="font-size:13px;color:${sc(t102)};font-weight:700">${f(t102)}m</span><span style="font-size:10px;color:#666"> ${fc(t102)}cch</span></div>
-    <div><span style="font-size:9px;color:var(--t101);letter-spacing:1px">${etq('101')}</span><br><span style="font-size:13px;color:${sc(t101)};font-weight:700">${f(t101)}m</span><span style="font-size:10px;color:#666"> ${fc(t101)}cch</span></div>
-    <div><span style="font-size:9px;color:var(--orange);letter-spacing:1px">${nm('tz')}</span><br><span style="font-size:14px;color:${sc(tot)};font-weight:900">${f(tot)}m</span><span style="font-size:10px;color:#666"> ${fc(tot)}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t103);letter-spacing:1px">${etq('103')}</span><br><span style="font-size:13px;color:${sc(t103)};font-weight:700">${f(t103)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TACTOS,'103',[curWeek])}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t102);letter-spacing:1px">${etq('102')}</span><br><span style="font-size:13px;color:${sc(t102)};font-weight:700">${f(t102)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TACTOS,'102',[curWeek])}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t101);letter-spacing:1px">${etq('101')}</span><br><span style="font-size:13px;color:${sc(t101)};font-weight:700">${f(t101)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TACTOS,'101',[curWeek])}cch</span></div>
+    <div><span style="font-size:9px;color:var(--orange);letter-spacing:1px">${nm('tz')}</span><br><span style="font-size:14px;color:${sc(tot)};font-weight:900">${f(tot)}m</span><span style="font-size:10px;color:#666"> ${cochesTot(TACTOS,[curWeek])}cch</span></div>
   </div>`;
   const top5=TACTOS.map(t=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[t]?.t103?.[di]||0)+msToSec(data[curWeek]?.[t]?.t102?.[di]||0)+msToSec(data[curWeek]?.[t]?.t101?.[di]||0);});return{t,sec,v:secToMs(sec)};}).filter(x=>x.sec>0).sort((a,b)=>b.sec-a.sec).slice(0,5);
   if(top5.length>0){
@@ -1869,7 +1876,7 @@ function renderTurnoClas(){
         <td style="font-family:Oswald;font-weight:900;font-size:12px;color:${item.sec>0?trn.color:'var(--text3)'};">${TN(item.tacto)}</td>
         <td style="padding:4px 8px;"><div style="background:var(--bg-card);height:8px;border-radius:2px;overflow:hidden;border:1px solid var(--border);"><div style="height:100%;width:${(item.sec/maxSec*100).toFixed(1)}%;background:${trn.color};"></div></div></td>
         <td style="text-align:right;font-family:Oswald;font-weight:700;">${f(item.v)}</td>
-        <td style="text-align:right;font-family:Oswald;font-weight:900;font-size:15px;color:var(--orange)">${item.sec>0?Math.round(item.sec/60/TAKT):'—'}</td>
+        <td style="text-align:right;font-family:Oswald;font-weight:900;font-size:15px;color:var(--orange)">${item.sec>0?cochesN([item.tacto],trn.key,[curWeek]):'—'}</td>
       </tr>`;
     });
     html+=`</tbody></table></div>`;
@@ -1896,7 +1903,7 @@ function renderTurnoClasAnual(){
         <td style="font-family:Oswald;font-weight:900;font-size:12px;color:${item.sec>0?trn.color:'var(--text3)'};">${TN(item.tacto)}</td>
         <td style="padding:4px 8px;"><div style="background:var(--bg-card);height:8px;border-radius:2px;overflow:hidden;border:1px solid var(--border);"><div style="height:100%;width:${(item.sec/maxSec*100).toFixed(1)}%;background:${trn.color};"></div></div></td>
         <td style="text-align:right;font-family:Oswald;font-weight:700;">${f(item.v)}</td>
-        <td style="text-align:right;font-family:Oswald;font-weight:900;font-size:15px;color:var(--orange)">${item.sec>0?Math.round(item.sec/60/TAKT):'—'}</td>
+        <td style="text-align:right;font-family:Oswald;font-weight:900;font-size:15px;color:var(--orange)">${item.sec>0?cochesN([item.tacto],trn.key,SEMS_ANO):'—'}</td>
       </tr>`;
     });
     html+=`</tbody></table></div>`;
@@ -1923,7 +1930,7 @@ function renderLiga(){
       <td style="text-align:right;color:var(--t102);font-weight:600">${f(item.t102)}</td>
       <td style="text-align:right;color:var(--t101);font-weight:600">${f(item.t101)}</td>
       <td style="text-align:right;color:var(--orange);font-weight:800;font-size:14px">${item.total>0?item.total.toFixed(2):'—'}</td>
-      <td style="text-align:right;color:var(--orange);font-weight:800;font-size:14px">${item.total>0?Math.round(msToSec(item.total)/60/TAKT):'—'}</td>
+      <td style="text-align:right;color:var(--orange);font-weight:800;font-size:14px">${item.total>0?cochesTot([item.tacto],[curWeek]):'—'}</td>
     </tr>`;
   });
   html+=`</tbody></table>`;container.innerHTML=html;
@@ -1949,7 +1956,7 @@ function renderTop5(){
         <div class="top5-bar-row"><span style="font-family:Oswald;font-size:10px;font-weight:600;width:36px;color:var(--t101)">101</span><div class="top5-trk"><div class="top5-fill t101" style="width:${(item.t101/maxB*100).toFixed(1)}%"></div></div><span style="font-family:Oswald;font-weight:700;font-size:12px;width:38px;text-align:right;color:var(--t101)">${f(item.t101)}</span></div>
       </div></td>
       <td style="text-align:right;font-family:Oswald;font-weight:700;font-size:15px;color:var(--orange)">${item.total.toFixed(2)}</td>
-      <td style="text-align:right;font-family:Oswald;font-weight:700;font-size:15px;color:var(--orange)">${Math.round(msToSec(item.total)/60/TAKT)}</td>
+      <td style="text-align:right;font-family:Oswald;font-weight:700;font-size:15px;color:var(--orange)">${cochesTot([item.tacto],[curWeek])}</td>
     </tr>`;
   });
   html+=`</tbody></table>`;container.innerHTML=html;
@@ -2023,15 +2030,15 @@ function updateTicker(t103,t102,t101,tot){
   const top=document.getElementById('tkTop');
   if(top){
     let p=[];
-    p.push(s(`<span class="tk-lbl">SEM ${wk}</span><span class="tk-val ${sc(t103)}" style="color:var(--t103)">103</span><span class="tk-sep">:</span><span class="tk-c">${fc(t103)} perd.</span>`));
-    p.push(s(`<span class="tk-val ${sc(t102)}" style="color:var(--t102)">102</span><span class="tk-sep">:</span><span class="tk-c">${fc(t102)} perd.</span>`));
-    p.push(s(`<span class="tk-val ${sc(t101)}" style="color:var(--t101)">101</span><span class="tk-sep">:</span><span class="tk-c">${fc(t101)} perd.</span>`));
-    p.push(s(`<span class="tk-lbl">TOTAL</span><span class="tk-val ${sc(tot)}" style="font-size:15px;font-weight:900">${fc(tot)} COCHES PERDIDOS</span>`));
+    p.push(s(`<span class="tk-lbl">SEM ${wk}</span><span class="tk-val ${sc(t103)}" style="color:var(--t103)">103</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'103',[curWeek])} perd.</span>`));
+    p.push(s(`<span class="tk-val ${sc(t102)}" style="color:var(--t102)">102</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'102',[curWeek])} perd.</span>`));
+    p.push(s(`<span class="tk-val ${sc(t101)}" style="color:var(--t101)">101</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'101',[curWeek])} perd.</span>`));
+    p.push(s(`<span class="tk-lbl">TOTAL</span><span class="tk-val ${sc(tot)}" style="font-size:15px;font-weight:900">${cochesTot(TACTOS,[curWeek])} COCHES PERDIDOS</span>`));
     p.push(s(D));
-    p.push(s(`<span class="tk-lbl">AÑO</span><span style="color:var(--t103);font-weight:900">103</span><span class="tk-sep">:</span><span class="tk-c">${fc(secToMs(a3))} perd.</span>`));
-    p.push(s(`<span style="color:var(--t102);font-weight:900">102</span><span class="tk-sep">:</span><span class="tk-c">${fc(secToMs(a2))} perd.</span>`));
-    p.push(s(`<span style="color:var(--t101);font-weight:900">101</span><span class="tk-sep">:</span><span class="tk-c">${fc(secToMs(a1))} perd.</span>`));
-    p.push(s(`<span class="tk-lbl">TOTAL AÑO</span><span class="tk-val rojo" style="font-size:15px;font-weight:900">${fc(anTot)} COCHES PERDIDOS</span>`));
+    p.push(s(`<span class="tk-lbl">AÑO</span><span style="color:var(--t103);font-weight:900">103</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'103',SEMS_ANO)} perd.</span>`));
+    p.push(s(`<span style="color:var(--t102);font-weight:900">102</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'102',SEMS_ANO)} perd.</span>`));
+    p.push(s(`<span style="color:var(--t101);font-weight:900">101</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'101',SEMS_ANO)} perd.</span>`));
+    p.push(s(`<span class="tk-lbl">TOTAL AÑO</span><span class="tk-val rojo" style="font-size:15px;font-weight:900">${cochesTot(TACTOS,SEMS_ANO)} COCHES PERDIDOS</span>`));
     setTicker(top,p.join(''),100);
   }
   const bot=document.getElementById('tkBot');if(!bot)return;
@@ -2052,10 +2059,10 @@ function showYearModal(){
   const fc=v=>Math.round(msToSec(v)/60/TAKT);const f=v=>v>0?v.toFixed(2):'—';
   document.getElementById('yearModalBody').innerHTML=`<div><div class="modal-section-ttl">Totales acumulados año</div>
     <div class="modal-kpis">
-      <div class="modal-kpi t103"><div class="modal-kpi-lbl">TURNO 103</div><div class="modal-kpi-val">${f(v3)}</div><div class="modal-kpi-sub">min · ${fc(v3)} coches</div></div>
-      <div class="modal-kpi t102"><div class="modal-kpi-lbl">TURNO 102</div><div class="modal-kpi-val">${f(v2)}</div><div class="modal-kpi-sub">min · ${fc(v2)} coches</div></div>
-      <div class="modal-kpi t101"><div class="modal-kpi-lbl">TURNO 101</div><div class="modal-kpi-val">${f(v1)}</div><div class="modal-kpi-sub">min · ${fc(v1)} coches</div></div>
-      <div class="modal-kpi tot"><div class="modal-kpi-lbl">TOTAL 3 TURNOS</div><div class="modal-kpi-val">${f(vT)}</div><div class="modal-kpi-sub">min · ${fc(vT)} coches</div></div>
+      <div class="modal-kpi t103"><div class="modal-kpi-lbl">TURNO 103</div><div class="modal-kpi-val">${f(v3)}</div><div class="modal-kpi-sub">min · ${cochesN(TACTOS,'103',SEMS_ANO)} coches</div></div>
+      <div class="modal-kpi t102"><div class="modal-kpi-lbl">TURNO 102</div><div class="modal-kpi-val">${f(v2)}</div><div class="modal-kpi-sub">min · ${cochesN(TACTOS,'102',SEMS_ANO)} coches</div></div>
+      <div class="modal-kpi t101"><div class="modal-kpi-lbl">TURNO 101</div><div class="modal-kpi-val">${f(v1)}</div><div class="modal-kpi-sub">min · ${cochesN(TACTOS,'101',SEMS_ANO)} coches</div></div>
+      <div class="modal-kpi tot"><div class="modal-kpi-lbl">TOTAL 3 TURNOS</div><div class="modal-kpi-val">${f(vT)}</div><div class="modal-kpi-sub">min · ${cochesTot(TACTOS,SEMS_ANO)} coches</div></div>
     </div></div>`;
   document.getElementById('yearModal').classList.add('open');
 }

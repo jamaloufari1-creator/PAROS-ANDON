@@ -2541,7 +2541,7 @@ function renderAccessLog(){
           const uN=uNames[uKey]||v.usuario||'—';
           return `
           <tr>
-            <td style="font-family:Oswald;font-weight:900;font-size:13px;color:${uC}">${uN}${v.nombre?`<div class="al-quien">${String(v.nombre).replace(/</g,'&lt;')}${v.perfil?' · '+String(v.perfil).replace(/</g,'&lt;'):''}${v.nis?' · NIS '+v.nis:''}${v.via?' · vía '+v.via:''}</div>`:''}</td>
+            <td style="font-family:Oswald;font-weight:900;font-size:13px;color:${uC}">${uN}${v.nombre?`<div class="al-quien">${String(v.nombre).replace(/</g,'&lt;')}${v.perfil?' · '+String(v.perfil).replace(/</g,'&lt;'):''}${v.via?' · vía '+v.via:''}</div>`:''}</td>
             <td>${v.sesion||v.id||'—'}</td>
             <td>${v.ip||'—'}</td>
             <td>${v.fecha||'—'}</td>
@@ -2586,7 +2586,6 @@ async function startAccessSession(){
     id:_currentVisitId,
     usuario:WS_NAMES[_currentUser]||_currentUser||'—',
     nombre:(_currentUser!=='admin'&&_ident)?_ident.nombre:'',
-    nis:(_currentUser!=='admin'&&_ident)?_nisMask(_ident.nis):'',
     perfil:(_currentUser!=='admin'&&_ident&&_ident.perfil)?_ident.perfil:'',
     via:(_currentUser!=='admin'&&_ident&&_ident.src==='crew')?'ML2 Crew':'',
     sesion:_currentVisitLabel,
@@ -2696,15 +2695,15 @@ function wsCheckAdmin(){
 const NIS_URL='https://ml2-datos.jamal-oufari1.workers.dev/entrar';
 function _identGuardada(){
   // 1) Abierta desde ML2 Crew (misma web): ML2 Crew ya sabe quién es
-  try{if(window.parent!==window&&typeof window.parent.andonIdentidad==='function'){const q=window.parent.andonIdentidad();if(q&&q.nombre)return{nombre:String(q.nombre).toUpperCase(),nis:String(q.nis||''),perfil:String(q.perfil||''),ts:Date.now(),src:'crew'};}}catch(e){}
+  try{if(window.parent!==window&&typeof window.parent.andonIdentidad==='function'){const q=window.parent.andonIdentidad();if(q&&q.nombre)return{nombre:_pila(q.nombre),perfil:String(q.perfil||''),ts:Date.now(),src:'crew'};}}catch(e){}
   // 2) Ya se identificó en Andon
-  for(const st of [localStorage,sessionStorage]){try{const g=JSON.parse(st.getItem('andon_ident')||'null');if(g&&g.nombre&&g.nis&&Date.now()-(g.ts||0)<30*864e5)return g;}catch(e){}}
+  for(const st of [localStorage,sessionStorage]){try{const g=JSON.parse(st.getItem('andon_ident')||'null');if(g&&g.nombre&&Date.now()-(g.ts||0)<30*864e5)return g;}catch(e){}}
   // 3) Ya se identificó como invitado en ML2 Crew en este dispositivo
-  try{const g=JSON.parse(localStorage.getItem('inv_ident')||'null');if(g&&g.nombre&&g.nis&&Date.now()-(g.ts||0)<30*864e5)return{nombre:String(g.nombre).toUpperCase(),nis:String(g.nis),ts:g.ts,src:'crew'};}catch(e){}
+  try{const g=JSON.parse(localStorage.getItem('inv_ident')||'null');if(g&&g.nombre&&g.nis&&Date.now()-(g.ts||0)<30*864e5)return{nombre:_pila(g.nombre),ts:g.ts,src:'crew'};}catch(e){}
   return null;
 }
 let _ident=_identGuardada(),_nisPend=null;
-function _nisMask(n){n=String(n||'');return n?'···'+n.slice(-3):'';}
+function _pila(n){return String(n||'').trim().split(/\s+/)[0].toUpperCase();}
 function pintarNisYo(){
   const el=document.getElementById('nisYo');if(!el)return;
   if(_ident){el.innerHTML=`Entras como <b>${String(_ident.nombre).replace(/</g,'&lt;')}</b>`+(_ident.src==='crew'?' · desde ML2 Crew':'<a onclick="nisOlvidar()">No soy yo</a>');el.style.display='block';}
@@ -2736,7 +2735,7 @@ async function nisEntrar(){
     if(!r.ok){err.textContent='⚠ No hay conexión. Prueba otra vez en un momento.';return;}
   }catch(e){err.textContent='⚠ No hay conexión. Prueba otra vez en un momento.';return;}
   finally{btn.disabled=false;}
-  _ident={nombre:nombre.toUpperCase(),nis,ts:Date.now()};
+  _ident={nombre:_pila(nombre),ts:Date.now()};
   try{(document.getElementById('nisRec').checked?localStorage:sessionStorage).setItem('andon_ident',JSON.stringify(_ident));}catch(e){}
   document.getElementById('nisNis').value='';
   const p=_nisPend;nisCerrar();pintarNisYo();

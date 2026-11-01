@@ -3071,5 +3071,17 @@ window.addEventListener('mousemove',()=>touchAccessSession(false));
 window.addEventListener('scroll',()=>touchAccessSession(false),{passive:true});
 setInterval(renderAccessLog,5000);
 </script>
+<script>
+/* 01/11 (Jamal): en monitores grandes la app se veía pequeña. Se ve igual que en una pantalla de 1440 px y se amplía
+   en proporción al ancho (nada cambia de sitio). En el móvil y en pantallas pequeñas, como siempre. */
+function ajustarZoomAndon(){
+  const W=window.innerWidth,r=document.documentElement;
+  let z=1;if(W>1440)z=Math.min(1.8,W/1440);
+  r.style.zoom=z===1?'':String(z);
+}
+ajustarZoomAndon();
+let _zoomT=null;
+window.addEventListener('resize',()=>{clearTimeout(_zoomT);_zoomT=setTimeout(()=>{const a=document.documentElement.style.zoom;ajustarZoomAndon();if(document.documentElement.style.zoom!==a){try{drawChart();drawParadasChart();}catch(e){}}},150);});
+</script>
 </body>
 </html>

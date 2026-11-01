@@ -479,6 +479,25 @@ body.tr2 .gr-nuevo{display:grid;}
 #wsAdminBox{margin-top:18px !important;}
 .hdr-tramo{display:inline-block;padding:1px 8px;border:1px solid rgba(194,119,58,.6);color:var(--cu2);font-size:12px;letter-spacing:.14em;cursor:pointer;vertical-align:middle;}
 .hdr-tramo:hover{background:rgba(194,119,58,.15);}
+#nisModal{position:fixed;inset:0;z-index:10001;background:rgba(3,8,15,.8);display:none;align-items:center;justify-content:center;padding:16px;font-family:Oswald,sans-serif;}
+#nisModal.open{display:flex;}
+#nisModal .nis-bx{position:relative;width:100%;max-width:420px;box-sizing:border-box;background:#0b1828;padding:26px 24px 22px;--c:16px;clip-path:polygon(0 0,calc(100% - var(--c)) 0,100% var(--c),100% 100%,var(--c) 100%,0 calc(100% - var(--c)));}
+#nisModal .nis-bx::before{content:"";position:absolute;inset:0;pointer-events:none;background:rgba(194,119,58,.7);clip-path:polygon(evenodd,0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px),0 0,1.5px 1.5px,1.5px calc(100% - 16.6px),16.6px calc(100% - 1.5px),calc(100% - 1.5px) calc(100% - 1.5px),calc(100% - 1.5px) 16.6px,calc(100% - 16.6px) 1.5px,1.5px 1.5px);}
+#nisModal .nis-t{font-family:Michroma,sans-serif;color:var(--cu2);font-size:15px;letter-spacing:.18em;text-align:center;}
+#nisModal .nis-s{color:#8fa3bd;font-size:12px;letter-spacing:.12em;text-align:center;margin:6px 0 16px;}
+#nisModal label{display:block;color:#8fa3bd;font-size:11px;letter-spacing:.16em;margin:12px 0 5px;}
+#nisModal input[type=text]{width:100%;box-sizing:border-box;background:#101c2d;border:1px solid rgba(194,119,58,.5);color:#e8eef6;font-family:Oswald,sans-serif;font-size:18px;padding:10px 12px;letter-spacing:.06em;outline:none;}
+#nisModal input[type=text]:focus{border-color:var(--cu);}
+#nisModal .nis-rec{display:flex;gap:8px;align-items:center;color:#c9d3df;font-size:13px;margin:14px 0 6px;letter-spacing:.04em;cursor:pointer;}
+#nisModal .nis-err{min-height:18px;color:#ff6b5a;font-size:13px;letter-spacing:.04em;margin:4px 0 10px;text-align:center;}
+#nisModal .nis-ok{width:100%;padding:13px;border:none;cursor:pointer;background:linear-gradient(90deg,#c2773a,#e29a5b);color:#1a0d05;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:.2em;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 10px,100% 100%,10px 100%,0 calc(100% - 10px));}
+#nisModal .nis-ok:disabled{opacity:.6;cursor:wait;}
+#nisModal .nis-vol{text-align:center;color:#6f8199;font-size:12px;letter-spacing:.14em;margin-top:12px;cursor:pointer;}
+#nisModal .nis-nota{color:#6f8199;font-size:11px;text-align:center;margin-top:10px;letter-spacing:.04em;}
+.nis-yo{margin-top:16px;color:#6f8199;font-size:12px;letter-spacing:.1em;}
+.nis-yo b{color:#c9d3df;font-weight:600;}
+.nis-yo a{color:var(--cu2);cursor:pointer;text-decoration:underline;margin-left:8px;}
+.al-quien{font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;color:var(--text2);margin-top:2px;}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
 #ml2-escudo canvas{width:100%;height:100%;display:block;}
 #ml2-escudo.fin canvas{filter:drop-shadow(0 0 9px rgba(255,150,70,.6));transition:filter 1.2s;}
@@ -489,6 +508,21 @@ body.tr2 .gr-nuevo{display:grid;}
 <body>
 
 <!-- PANTALLA BIENVENIDA -->
+<div id="nisModal" onclick="if(event.target===this)nisCerrar()">
+  <div class="nis-bx">
+    <div class="nis-t">IDENTIFÍCATE</div>
+    <div class="nis-s" id="nisDonde"></div>
+    <label for="nisNom">NOMBRE Y APELLIDO</label>
+    <input id="nisNom" type="text" autocomplete="name" placeholder="Como sale en ML2 Crew">
+    <label for="nisNis">NIS</label>
+    <input id="nisNis" type="text" inputmode="numeric" autocomplete="off" placeholder="Tu número NIS" onkeydown="if(event.key==='Enter')nisEntrar()">
+    <label class="nis-rec"><input id="nisRec" type="checkbox" checked> Recordarme en este dispositivo</label>
+    <div class="nis-err" id="nisErr"></div>
+    <button class="nis-ok" id="nisOk" onclick="nisEntrar()">ENTRAR</button>
+    <div class="nis-vol" onclick="nisCerrar()">◀ VOLVER</div>
+    <div class="nis-nota">Se comprueba con la plantilla de ML2 Crew.</div>
+  </div>
+</div>
 <div id="wsScreen" style="position:fixed;inset:0;z-index:9999;background:#0A0A0A;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   font-family:Oswald,sans-serif;">
@@ -515,6 +549,7 @@ body.tr2 .gr-nuevo{display:grid;}
     </div></div>
   </div>
   <button onclick="wsShowAdmin()" id="wsAdminBtn" class="ws-admin-punto" title="" aria-label="Admin"></button>
+  <div id="nisYo" class="nis-yo" style="display:none;"></div>
   <div id="wsAdminBox" style="display:none;margin-top:16px;text-align:center;">
     <input id="wsAdminPass" type="password" placeholder="contraseña" style="background:#1a1a1a;border:1px solid #333;color:#fff;font-family:Oswald,sans-serif;font-size:16px;padding:10px 16px;outline:none;width:180px;text-align:center;letter-spacing:4px;" onkeydown="if(event.key==='Enter')wsCheckAdmin()">
     <button onclick="wsCheckAdmin()" style="margin-left:8px;padding:10px 20px;background:var(--orange);border:none;color:#fff;font-family:Oswald,sans-serif;font-weight:700;font-size:12px;letter-spacing:2px;cursor:pointer;">OK</button>
@@ -2480,6 +2515,7 @@ function renderAccessLog(){
     <table class="tbl">
       <thead>
         <tr>
+          <th>Usuario</th>
           <th>Sesión</th>
           <th>IP</th>
           <th>Fecha</th>
@@ -2505,7 +2541,7 @@ function renderAccessLog(){
           const uN=uNames[uKey]||v.usuario||'—';
           return `
           <tr>
-            <td style="font-family:Oswald;font-weight:900;font-size:13px;color:${uC}">${uN}</td>
+            <td style="font-family:Oswald;font-weight:900;font-size:13px;color:${uC}">${uN}${v.nombre?`<div class="al-quien">${String(v.nombre).replace(/</g,'&lt;')}${v.perfil?' · '+String(v.perfil).replace(/</g,'&lt;'):''}${v.nis?' · NIS '+v.nis:''}${v.via?' · vía '+v.via:''}</div>`:''}</td>
             <td>${v.sesion||v.id||'—'}</td>
             <td>${v.ip||'—'}</td>
             <td>${v.fecha||'—'}</td>
@@ -2549,6 +2585,10 @@ async function startAccessSession(){
   window._accessLog[_currentVisitId]={
     id:_currentVisitId,
     usuario:WS_NAMES[_currentUser]||_currentUser||'—',
+    nombre:(_currentUser!=='admin'&&_ident)?_ident.nombre:'',
+    nis:(_currentUser!=='admin'&&_ident)?_nisMask(_ident.nis):'',
+    perfil:(_currentUser!=='admin'&&_ident&&_ident.perfil)?_ident.perfil:'',
+    via:(_currentUser!=='admin'&&_ident&&_ident.src==='crew')?'ML2 Crew':'',
     sesion:_currentVisitLabel,
     ip:'…',
     fecha:now.toLocaleDateString('es-ES'),
@@ -2630,6 +2670,7 @@ async function init(){
 /* ══ PANTALLA BIENVENIDA ══ */
 document.addEventListener('DOMContentLoaded',()=>{
   if(window.TR2)document.body.classList.add('tr2');
+  pintarNisYo();
   const tt=document.getElementById('hdrTramo');if(tt)tt.textContent=(window.TR2?'TRAMO 2':'TRAMO 3/4')+' ⇄';
   let u=null;try{u=sessionStorage.getItem('paros_entra');sessionStorage.removeItem('paros_entra');}catch(e){}
   if(u)setTimeout(()=>wsEnter(u),50);
@@ -2651,7 +2692,57 @@ function wsCheckAdmin(){
   else{err.style.display='block';document.getElementById('wsAdminPass').value='';}
 }
 
+/* ══ IDENTIFICACIÓN CON NOMBRE + NIS (contra la plantilla de ML2 Crew) ══ */
+const NIS_URL='https://ml2-datos.jamal-oufari1.workers.dev/entrar';
+function _identGuardada(){
+  // 1) Abierta desde ML2 Crew (misma web): ML2 Crew ya sabe quién es
+  try{if(window.parent!==window&&typeof window.parent.andonIdentidad==='function'){const q=window.parent.andonIdentidad();if(q&&q.nombre)return{nombre:String(q.nombre).toUpperCase(),nis:String(q.nis||''),perfil:String(q.perfil||''),ts:Date.now(),src:'crew'};}}catch(e){}
+  // 2) Ya se identificó en Andon
+  for(const st of [localStorage,sessionStorage]){try{const g=JSON.parse(st.getItem('andon_ident')||'null');if(g&&g.nombre&&g.nis&&Date.now()-(g.ts||0)<30*864e5)return g;}catch(e){}}
+  // 3) Ya se identificó como invitado en ML2 Crew en este dispositivo
+  try{const g=JSON.parse(localStorage.getItem('inv_ident')||'null');if(g&&g.nombre&&g.nis&&Date.now()-(g.ts||0)<30*864e5)return{nombre:String(g.nombre).toUpperCase(),nis:String(g.nis),ts:g.ts,src:'crew'};}catch(e){}
+  return null;
+}
+let _ident=_identGuardada(),_nisPend=null;
+function _nisMask(n){n=String(n||'');return n?'···'+n.slice(-3):'';}
+function pintarNisYo(){
+  const el=document.getElementById('nisYo');if(!el)return;
+  if(_ident){el.innerHTML=`Entras como <b>${String(_ident.nombre).replace(/</g,'&lt;')}</b>`+(_ident.src==='crew'?' · desde ML2 Crew':'<a onclick="nisOlvidar()">No soy yo</a>');el.style.display='block';}
+  else el.style.display='none';
+}
+function nisOlvidar(){
+  try{localStorage.removeItem('andon_ident');sessionStorage.removeItem('andon_ident');}catch(e){}
+  _ident=_identGuardada();pintarNisYo();
+}
+function nisCerrar(){document.getElementById('nisModal').classList.remove('open');_nisPend=null;}
 function wsTramo(tr,user){
+  if(_ident){wsTramoReal(tr,user);return;}
+  _nisPend={tr,user};
+  document.getElementById('nisDonde').textContent=(tr==='2'?'TRAMO 2':'TRAMO 3/4')+' · '+(WS_NAMES[user]||user).toUpperCase();
+  document.getElementById('nisErr').textContent='';
+  document.getElementById('nisModal').classList.add('open');
+  setTimeout(()=>document.getElementById('nisNom').focus(),60);
+}
+async function nisEntrar(){
+  const nombre=document.getElementById('nisNom').value.trim(),nis=document.getElementById('nisNis').value.replace(/\s+/g,'');
+  const err=document.getElementById('nisErr'),btn=document.getElementById('nisOk');
+  if(!nombre){err.textContent='Escribe tu nombre';return;}
+  if(!/^\d{3,10}$/.test(nis)){err.textContent='Escribe tu NIS (solo números)';return;}
+  err.textContent='⏳ Comprobando…';btn.disabled=true;
+  try{
+    const r=await fetch(NIS_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({fila:'ml2-v2',nombre,nis})});
+    if(r.status===429){err.textContent='⛔ Demasiados intentos. Espera un rato y vuelve a probar.';return;}
+    if(r.status===403){err.textContent='⛔ El nombre y el NIS no coinciden con ningún operario de ML2 Crew';return;}
+    if(!r.ok){err.textContent='⚠ No hay conexión. Prueba otra vez en un momento.';return;}
+  }catch(e){err.textContent='⚠ No hay conexión. Prueba otra vez en un momento.';return;}
+  finally{btn.disabled=false;}
+  _ident={nombre:nombre.toUpperCase(),nis,ts:Date.now()};
+  try{(document.getElementById('nisRec').checked?localStorage:sessionStorage).setItem('andon_ident',JSON.stringify(_ident));}catch(e){}
+  document.getElementById('nisNis').value='';
+  const p=_nisPend;nisCerrar();pintarNisYo();
+  if(p)wsTramoReal(p.tr,p.user);
+}
+function wsTramoReal(tr,user){
   const quiero=tr==='2';
   if(quiero!==!!window.TR2){try{sessionStorage.setItem('paros_tramo',quiero?'2':'34');sessionStorage.setItem('paros_entra',user);}catch(e){}
     const u=new URL(location.href);u.searchParams.delete('tramo');location.replace(u.toString());return;}
@@ -2868,7 +2959,7 @@ function abrirSemanas(){
 }
 function cerrarSemanas(){document.getElementById('wkPop').classList.remove('open');}
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){cerrarSemanas();cerrarNombres();cerrarGrupos();}
+  if(e.key==='Escape'){cerrarSemanas();cerrarNombres();cerrarGrupos();nisCerrar();}
   const t=e.target;if(t&&(t.isContentEditable||/INPUT|TEXTAREA|SELECT/.test(t.tagName)))return;
   if(e.key==='ArrowLeft')wkPaso(-1);
   if(e.key==='ArrowRight')wkPaso(1);

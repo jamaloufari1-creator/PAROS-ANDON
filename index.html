@@ -3091,11 +3091,11 @@ function ajustarZoomAndon(){
   const W=window.innerWidth,H=window.innerHeight,r=document.documentElement;
   const ws=document.getElementById('wsScreen'),c=document.getElementById('wsCont');
   const enInicio=!!ws&&ws.style.display!=='none';
-  let z=1;if(W>1440)z=Math.min(1.8,W/1440);
+  let z=1;if(W>1440)z=Math.min(4,W/1440);
   r.style.zoom=(enInicio||z===1)?'':String(z);
   if(c){
     c.style.zoom='';
-    if(enInicio&&W>700){const b=c.getBoundingClientRect();if(b.height){const k=Math.max(.6,Math.min(1.8,(H-40)/b.height,(W-32)/b.width));c.style.zoom=String(Math.round(k*100)/100);}}
+    if(enInicio&&W>700){const b=c.getBoundingClientRect();if(b.height){const k=Math.max(.6,Math.min(4,(H-40)/b.height,(W-32)/b.width));c.style.zoom=String(Math.round(k*100)/100);}}
   }
 }
 ajustarZoomAndon();

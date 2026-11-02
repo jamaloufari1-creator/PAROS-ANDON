@@ -2747,7 +2747,7 @@ function wsCheckAdmin(){
 const NIS_URL='https://ml2-datos.jamal-oufari1.workers.dev/entrar';
 function _identGuardada(){
   // 1) Abierta desde ML2 Crew (misma web): ML2 Crew ya sabe quién es
-  try{if(window.parent!==window&&typeof window.parent.andonIdentidad==='function'){const q=window.parent.andonIdentidad();if(q&&q.nombre)return{nombre:_pila(q.nombre),perfil:String(q.perfil||''),ts:Date.now(),src:'crew'};}}catch(e){}
+  try{if(window.parent!==window&&typeof window.parent.andonIdentidad==='function'){const q=window.parent.andonIdentidad();if(q&&(q.nombre||q.perfil))return{nombre:q.nombre?_pila(q.nombre):String(q.perfil).toUpperCase(),perfil:String(q.perfil||''),ts:Date.now(),src:'crew'};}}catch(e){}
   // 2) Ya se identificó en Andon
   for(const st of [localStorage,sessionStorage]){try{const g=JSON.parse(st.getItem('andon_ident')||'null');if(g&&g.nombre&&Date.now()-(g.ts||0)<30*864e5)return g;}catch(e){}}
   // 3) Ya se identificó como invitado en ML2 Crew en este dispositivo

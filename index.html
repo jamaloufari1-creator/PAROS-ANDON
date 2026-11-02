@@ -506,6 +506,13 @@ body.tr2 .gr-nuevo{display:grid;}
 .hdr-logo{height:40px;width:40px;display:block;filter:drop-shadow(0 0 6px rgba(194,119,58,.45));}
 @media(max-width:900px){.hdr-logo{height:30px;width:30px;}}
 </style>
+<style>
+#escBar{position:fixed;left:50%;bottom:62px;transform:translateX(-50%);z-index:2147483000;display:none;align-items:center;gap:8px;
+  background:rgba(10,14,22,.92);border:1px solid #c2773a;padding:5px 10px;font-family:'Oswald',sans-serif;font-size:12px;letter-spacing:1px;color:#e0a46f;}
+#escBar button{background:#1a2230;color:#e0a46f;border:1px solid #c2773a55;font:inherit;font-size:14px;line-height:1;padding:3px 9px;cursor:pointer;}
+#escBar button:hover{background:#243044;}
+#escBar b{min-width:42px;text-align:center;color:#fff;font-weight:600;}
+</style>
 </head>
 <body>
 
@@ -1347,7 +1354,7 @@ async function loadFromFirebase(){
     if(r.paradasData){try{window._paradasData=fixKeys(JSON.parse(r.paradasData));}catch(e){}}
     if(r.pdfHistory){try{window._pdfHistory=JSON.parse(r.pdfHistory);}catch(e){}}
     if(r.accessLog){try{window._accessLog=JSON.parse(r.accessLog)||{};}catch(e){}}
-    cargarNombres(r);cargarVacaciones(r);cargarGrupos(r);
+    cargarNombres(r);cargarVacaciones(r);cargarGrupos(r);cargarEscala(r);
     return true;
   }catch(e){return false;}
 }
@@ -2128,6 +2135,7 @@ function switchTab(id){
   document.querySelectorAll('.tab-section').forEach(s=>s.classList.remove('active'));
   const btn=document.querySelector(`.tab-btn[onclick="switchTab('${id}')"]`);if(btn)btn.classList.add('active');
   const sec=document.getElementById('tab-'+id);if(sec)sec.classList.add('active');
+  try{ajustarZoomAndon();pintarEscBar();}catch(e){}
   if(id==='dashboard'){drawChart();drawPieChart();}
   if(id==='clasificaciones'){renderTurnoClas();renderTurnoClasAnual();}
   if(id==='paradas'){renderParadas();drawParadasChart();}
@@ -2672,7 +2680,7 @@ async function init(){
     if(remote.nombres&&remote.nombres!==JSON.stringify(NM)){cargarNombres(remote);aplicarNombres();}
     changeWeek(curWeek);renderAccessLog();
     if(remote.festivos)loadFestivos(remote);
-    cargarGrupos(remote);
+    cargarGrupos(remote);cargarEscala(remote);
     if(cargarVacaciones(remote)){drawChart();drawParadasChart();pintarSemana();pintarVacaciones();}
   }catch(e){}});}
 }
@@ -2774,7 +2782,7 @@ function wsEnter(user){
   // Start access session now that user is identified
   startAccessSession();
   showToast(`✓ Bienvenido/a — ${WS_NAMES[user]||user}`);
-  setTimeout(()=>{try{ajustarZoomAndon();drawChart();drawParadasChart();}catch(e){}},330);
+  setTimeout(()=>{try{ajustarZoomAndon();pintarEscBar();drawChart();drawParadasChart();}catch(e){}},330);
 }
 
 function updateMsgPermissions(){
@@ -3088,19 +3096,47 @@ setInterval(renderAccessLog,5000);
 /* 01/11 (Jamal): en PC la app se veía pequeña, sobre todo el inicio dentro de ML2 Crew.
    Inicio: se amplía hasta llenar la pantalla. Resto: se ve como en 1440 px y se amplía en proporción al ancho.
    Móvil (≤700 px): como siempre. */
+let _escala={};
+try{_escala=JSON.parse(localStorage.getItem('paros_escala')||'{}')||{};}catch(e){}
+const ESC_NOM={inicio:'INICIO',dashboard:'DASHBOARD',clasificaciones:'CLASIFICACIONES',paradas:'PARADAS',datos:'ENTRADA DE DATOS'};
+function tabActiva(){const s=document.querySelector('.tab-section.active');return s?s.id.replace('tab-',''):'dashboard';}
+function escalaDe(v){const n=+_escala[v];return n>=50&&n<=200?n/100:1;}
+function esAdminEsc(){try{return _currentUser==='admin'||(!_currentUser&&localStorage.getItem('paros_user')==='admin');}catch(e){return false;}}
+function vistaEsc(){const ws=document.getElementById('wsScreen');return ws&&ws.style.display!=='none'?'inicio':tabActiva();}
+function pintarEscBar(){
+  let b=document.getElementById('escBar');
+  if(!esAdminEsc()||window.innerWidth<=700){if(b)b.style.display='none';return;}
+  if(!b){b=document.createElement('div');b.id='escBar';document.body.appendChild(b);}
+  const v=vistaEsc(),n=Math.round(escalaDe(v)*100);
+  b.innerHTML=`<span>TAMAÑO ${ESC_NOM[v]||v.toUpperCase()}</span><button onclick="cambiarEscala(-5)">−</button><b>${n}%</b><button onclick="cambiarEscala(5)">+</button><button title="Volver a 100 %" onclick="cambiarEscala(0)">↺</button>`;
+  b.style.bottom=v==='inicio'?'8px':'62px';b.style.display='flex';
+}
+let _escT=null;
+function cambiarEscala(d){
+  const v=vistaEsc();let n=Math.round(escalaDe(v)*100);n=d===0?100:Math.max(50,Math.min(200,n+d));
+  if(n===100)delete _escala[v];else _escala[v]=n;
+  try{localStorage.setItem('paros_escala',JSON.stringify(_escala));}catch(e){}
+  ajustarZoomAndon();pintarEscBar();try{drawChart();drawParadasChart();}catch(e){}
+  clearTimeout(_escT);_escT=setTimeout(()=>{if(window.fbSave&&_currentUser==='admin')window.fbSave({escalaVista:JSON.stringify(_escala)});},800);
+}
+function cargarEscala(remote){
+  if(!remote||remote.escalaVista==null)return;
+  try{const n=JSON.parse(remote.escalaVista)||{};if(JSON.stringify(n)===JSON.stringify(_escala))return;_escala=n;localStorage.setItem('paros_escala',JSON.stringify(n));ajustarZoomAndon();pintarEscBar();}catch(e){}
+}
 function ajustarZoomAndon(){
   const W=window.innerWidth,H=window.innerHeight,r=document.documentElement;
   const ws=document.getElementById('wsScreen'),c=document.getElementById('wsCont');
   const enInicio=!!ws&&ws.style.display!=='none';
-  let z=1;if(W>1440)z=Math.min(4,W/1440);
-  r.style.zoom=(enInicio||z===1)?'':String(z);
+  const e=W>700?escalaDe(enInicio?'inicio':tabActiva()):1;
+  let z=1;if(W>1440)z=Math.min(4,W/1440);z*=e;
+  r.style.zoom=(enInicio||z===1)?'':String(Math.round(z*100)/100);
   if(c){
     c.style.zoom='';
-    if(enInicio&&W>700){const b=c.getBoundingClientRect();if(b.height){const k=Math.max(.6,Math.min(4,(H-40)/b.height,(W-32)/b.width));c.style.zoom=String(Math.round(k*100)/100);}}
+    if(enInicio&&W>700){const b=c.getBoundingClientRect();if(b.height){const k=Math.max(.6,Math.min(4,(H-(esAdminEsc()?84:40))/b.height,(W-32)/b.width))*e;c.style.zoom=String(Math.round(k*100)/100);}}
   }
 }
-ajustarZoomAndon();
-window.addEventListener('load',ajustarZoomAndon);
+ajustarZoomAndon();pintarEscBar();
+window.addEventListener('load',()=>{ajustarZoomAndon();pintarEscBar();});
 try{document.fonts.ready.then(ajustarZoomAndon);}catch(e){}
 let _zoomT=null;
 window.addEventListener('resize',()=>{clearTimeout(_zoomT);_zoomT=setTimeout(()=>{const a=document.documentElement.style.zoom;ajustarZoomAndon();if(document.documentElement.style.zoom!==a){try{drawChart();drawParadasChart();}catch(e){}}},150);});

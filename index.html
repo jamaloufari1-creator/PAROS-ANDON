@@ -453,6 +453,10 @@ body.sem-vac .vac-aviso{display:inline;}
 #wsAdminBox button{--fc:transparent;}
 .gr-row{display:grid;grid-template-columns:54px 1fr 64px 110px;gap:10px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);font-family:Oswald,sans-serif;}
 .gr-row b{color:var(--cu2);font-size:16px;font-weight:600;}
+.gr-row.del{grid-template-columns:54px 1fr 64px 110px 76px;}
+.gr-del{background:#1a1016;color:#e06a6a;border:1px solid rgba(224,106,106,.5);font-family:Oswald,sans-serif;font-size:13px;letter-spacing:.06em;padding:4px 6px;cursor:pointer;}
+.gr-del:hover{background:#2a141a;}
+.gr-del.seguro{background:#c0392b;color:#fff;border-color:#e06a6a;}
 .gr-row span{color:var(--text);font-size:13px;letter-spacing:.04em;}
 .gr-row select{background:#101c2d;color:var(--text);border:1px solid rgba(194,119,58,.45);font-family:Oswald,sans-serif;font-size:14px;padding:5px 8px;outline:none;}
 .gr-row i{font-style:normal;font-family:Michroma,sans-serif;font-size:10px;letter-spacing:.08em;color:#8fa3bd;text-align:right;}
@@ -1160,7 +1164,7 @@ window.fbListen=cb=>{
 /* TRAMO 2: lista de tactos propia {num:nombre}; se crea sola al subir PDF y admin puede añadir */
 function _aplicarTactosTR2(o){if(!window.TR2||!o)return;Object.keys(o).forEach(k=>{const n=parseInt(k);if(!n)return;if(!TACTOS.includes(n))TACTOS.push(n);if(o[k])TN_MAP[n]=o[k];});TACTOS.sort((a,b)=>a-b);}
 function _tactosTR2Obj(){const o={};TACTOS.forEach(t=>o[t]=TN_MAP[t]||'');return o;}
-function cargarTactos(r){if(!window.TR2||!r||!r.tactos)return;try{_aplicarTactosTR2(JSON.parse(r.tactos));localStorage.setItem(LSK('paros_tactos'),JSON.stringify(_tactosTR2Obj()));}catch(e){}}
+function cargarTactos(r){if(!window.TR2||!r||!r.tactos)return;try{TACTOS.length=0;_aplicarTactosTR2(JSON.parse(r.tactos));localStorage.setItem(LSK('paros_tactos'),JSON.stringify(_tactosTR2Obj()));}catch(e){}}
 function nuevoTacto(t,nombre,guardar){
   t=parseInt(t);if(!window.TR2||!t||TACTOS_TR34.includes(t))return false;
   const era=TACTOS.includes(t);if(!era)TACTOS.push(t);TACTOS.sort((a,b)=>a-b);
@@ -3022,7 +3026,19 @@ function abrirGrupos(){
   if(_currentUser!=='admin')return;
   document.getElementById('grLista').innerHTML=TACTOS.map(t=>{const g=grupoDeTacto(t);
     return `<div class="gr-row${g?' con':''}"><b>${t}</b><span>${TN_MAP[t]||''}</span><i>${TRAMO_GRUPO[g]||''}</i><select data-t="${t}" onchange="this.parentNode.classList.toggle('con',!!this.value);this.previousElementSibling.textContent=TRAMO_GRUPO[this.value]||''"><option value="">—</option>${GRUPOS_ML2.map(x=>`<option value="${x}"${x===g?' selected':''}>GRUPO ${x}</option>`).join('')}</select></div>`;}).join('');
+  if(window.TR2)document.querySelectorAll('#grLista .gr-row').forEach(r=>{const t=r.querySelector('select').dataset.t;const x=document.createElement('button');x.type='button';x.className='gr-del';x.title='Eliminar tacto';x.textContent='✕';x.onclick=()=>borrarTactoTR2(t,x);r.appendChild(x);r.classList.add('del');});
   document.getElementById('grModal').classList.add('open');
+}
+function borrarTactoTR2(t,btn){
+  if(_currentUser!=='admin'||!window.TR2)return;
+  if(!btn.classList.contains('seguro')){btn.classList.add('seguro');btn.textContent='BORRAR';setTimeout(()=>{if(btn.isConnected){btn.classList.remove('seguro');btn.textContent='✕';}},4000);return;}
+  t=parseInt(t);const i=TACTOS.indexOf(t);if(i<0)return;
+  TACTOS.splice(i,1);delete TN_MAP[t];delete _gruposTacto[t];
+  localStorage.setItem(LSK('paros_tactos'),JSON.stringify(_tactosTR2Obj()));localStorage.setItem(LSK('paros_grupos'),JSON.stringify(_gruposTacto));
+  if(window.fbSave)window.fbSave({tactos:JSON.stringify(_tactosTR2Obj()),gruposTacto:JSON.stringify(_gruposTacto)});
+  const r=btn.closest('.gr-row');if(r)r.remove();
+  try{renderTacto();renderTS();updateKPIs();renderTurnoClas();renderTurnoClasAnual();renderTop5();renderLiga();renderAnnTable();renderParadas();drawPieChart();drawChart();}catch(e){}
+  showToast('✓ Tacto '+t+' eliminado');
 }
 function anadirCargaTR2(){
   const n=parseInt(document.getElementById('grNum').value),nom=document.getElementById('grNom').value;

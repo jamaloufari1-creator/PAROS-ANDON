@@ -1162,13 +1162,15 @@ window.fbListen=cb=>{
 <script>
 /* ══ CONSTANTES ══ */
 /* TRAMO 2: lista de tactos propia {num:nombre}; se crea sola al subir PDF y admin puede añadir */
-function _aplicarTactosTR2(o){if(!window.TR2||!o)return;Object.keys(o).forEach(k=>{const n=parseInt(k);if(!n)return;if(!TACTOS.includes(n))TACTOS.push(n);if(o[k])TN_MAP[n]=o[k];});TACTOS.sort((a,b)=>a-b);}
+const _IMPUT=/^\s*(ASEGURAMIENTO\s*(DE\s*)?CALIDAD|CALIDAD|MANTENIMIENTO|PRODUCCI[OÓ]N|LOG[IÍ]STICA|INGENIER[IÍ]A|PROCESOS?)\s*$/i;
+function _limpiaNomTacto(n){n=String(n||'').trim();return _IMPUT.test(n)?'':n;}
+function _aplicarTactosTR2(o){if(!window.TR2||!o)return;Object.keys(o).forEach(k=>{const n=parseInt(k);if(!n)return;if(!TACTOS.includes(n))TACTOS.push(n);const nm2=_limpiaNomTacto(o[k]);if(nm2)TN_MAP[n]=nm2;else delete TN_MAP[n];});TACTOS.sort((a,b)=>a-b);}
 function _tactosTR2Obj(){const o={};TACTOS.forEach(t=>o[t]=TN_MAP[t]||'');return o;}
 function cargarTactos(r){if(!window.TR2||!r||!r.tactos)return;try{TACTOS.length=0;_aplicarTactosTR2(JSON.parse(r.tactos));localStorage.setItem(LSK('paros_tactos'),JSON.stringify(_tactosTR2Obj()));}catch(e){}}
 function nuevoTacto(t,nombre,guardar){
   t=parseInt(t);if(!window.TR2||!t||TACTOS_TR34.includes(t))return false;
   const era=TACTOS.includes(t);if(!era)TACTOS.push(t);TACTOS.sort((a,b)=>a-b);
-  if(nombre)TN_MAP[t]=String(nombre).trim().toUpperCase().slice(0,40);
+  nombre=_limpiaNomTacto(nombre);if(nombre)TN_MAP[t]=String(nombre).trim().toUpperCase().slice(0,40);
   if(typeof data==='object')for(let w=1;w<=WEEKS;w++){if(!data[w])data[w]={};if(!data[w][t])data[w][t]={t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0,0,0,0,0]};}
   localStorage.setItem(LSK('paros_tactos'),JSON.stringify(_tactosTR2Obj()));
   if(guardar!==false&&window.fbSave)window.fbSave({tactos:JSON.stringify(_tactosTR2Obj())});
@@ -2605,7 +2607,9 @@ function renderAccessLog(){
 }
 
 function saveAccessLog(silent=true){
-  persist();
+  // Antes llamaba a persist() y cada aparato abierto volvía a subir SUS datos cada 15 s (podía pisar lo recién subido).
+  try{localStorage.setItem(LSK('paros_v3'),JSON.stringify({data,annData,curWeek,paradasData:window._paradasData||{},pdfHistory:window._pdfHistory||{},accessLog:window._accessLog||{}}));}catch(e){}
+  if(window.fbSave)window.fbSave({accessLog:JSON.stringify(window._accessLog||{})});
   renderAccessLog();
   if(!silent)showToast('✓ Registro de acceso actualizado');
 }

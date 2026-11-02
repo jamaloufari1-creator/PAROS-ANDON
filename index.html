@@ -2717,6 +2717,7 @@ let _ident=_identGuardada(),_nisPend=null;
 function _pila(n){return String(n||'').trim().split(/\s+/)[0].toUpperCase();}
 function pintarNisYo(){
   const el=document.getElementById('nisYo');if(!el)return;
+  el.style.display='none';return;
   if(_ident){el.innerHTML=`Entras como <b>${String(_ident.nombre).replace(/</g,'&lt;')}</b>`+(_ident.src==='crew'?' · desde ML2 Crew':'<a onclick="nisOlvidar()">No soy yo</a>');el.style.display='block';}
   else el.style.display='none';
 }

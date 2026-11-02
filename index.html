@@ -480,9 +480,12 @@ body.tr2 .gr-nuevo{display:grid;}
 .hdr-tramo{display:inline-block;padding:1px 8px;border:1px solid rgba(194,119,58,.6);color:var(--cu2);font-size:12px;letter-spacing:.14em;cursor:pointer;vertical-align:middle;}
 .hdr-tramo:hover{background:rgba(194,119,58,.15);}
 .hdr-tramos{display:inline-flex;gap:6px;vertical-align:middle;margin-left:4px;}
-.hdr-tramos button{font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:.14em;padding:4px 14px;cursor:pointer;color:#8a96a8;background:#101826;border:1px solid rgba(194,119,58,.45);clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));transition:background .2s,color .2s;}
-.hdr-tramos button:hover{color:#e0a46f;background:#1a2230;}
-.hdr-tramos button.on{color:#1a0f06;background:linear-gradient(135deg,#e0a46f,#c2773a);border-color:#e0a46f;box-shadow:0 0 12px rgba(224,164,111,.55);cursor:default;}
+.hdr-tramos button{position:relative;isolation:isolate;font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:.14em;padding:5px 16px;cursor:pointer;color:#8a96a8;border:none;background:rgba(194,119,58,.6);clip-path:polygon(0 0,calc(100% - 9px) 0,100% 9px,100% 100%,9px 100%,0 calc(100% - 9px));transition:color .2s;}
+.hdr-tramos button::before{content:'';position:absolute;inset:1px;z-index:-1;background:#101826;clip-path:polygon(0 0,calc(100% - 8.6px) 0,100% 8.6px,100% 100%,8.6px 100%,0 calc(100% - 8.6px));}
+.hdr-tramos button:hover{color:#e0a46f;}
+.hdr-tramos button:hover::before{background:#1a2230;}
+.hdr-tramos button.on{color:#1a0f06;background:#f3c79a;cursor:default;filter:drop-shadow(0 0 6px rgba(224,164,111,.55));}
+.hdr-tramos button.on::before{background:linear-gradient(135deg,#e0a46f,#c2773a);}
 #nisModal{position:fixed;inset:0;z-index:10001;background:rgba(3,8,15,.8);display:none;align-items:center;justify-content:center;padding:16px;font-family:Oswald,sans-serif;}
 #nisModal.open{display:flex;}
 #nisModal .nis-bx{position:relative;width:100%;max-width:420px;box-sizing:border-box;background:#0b1828;padding:26px 24px 22px;--c:16px;clip-path:polygon(0 0,calc(100% - var(--c)) 0,100% var(--c),100% 100%,var(--c) 100%,0 calc(100% - var(--c)));}

@@ -3117,10 +3117,11 @@ function cambiarEscala(d){
   if(n===100)delete _escala[v];else _escala[v]=n;
   try{localStorage.setItem('paros_escala',JSON.stringify(_escala));}catch(e){}
   ajustarZoomAndon();pintarEscBar();try{drawChart();drawParadasChart();}catch(e){}
-  clearTimeout(_escT);_escT=setTimeout(()=>{if(window.fbSave&&_currentUser==='admin')window.fbSave({escalaVista:JSON.stringify(_escala)});},800);
+  window._escLocal=Date.now();clearTimeout(_escT);_escT=setTimeout(()=>{if(window.fbSave&&_currentUser==='admin')window.fbSave({escalaVista:JSON.stringify(_escala)});},300);
 }
 function cargarEscala(remote){
   if(!remote||remote.escalaVista==null)return;
+  if(Date.now()-(window._escLocal||0)<6000)return; // no pisar lo que el admin acaba de pulsar con datos viejos de la nube
   try{const n=JSON.parse(remote.escalaVista)||{};if(JSON.stringify(n)===JSON.stringify(_escala))return;_escala=n;localStorage.setItem('paros_escala',JSON.stringify(n));ajustarZoomAndon();pintarEscBar();}catch(e){}
 }
 function ajustarZoomAndon(){

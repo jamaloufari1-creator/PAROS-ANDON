@@ -479,6 +479,10 @@ body.tr2 .gr-nuevo{display:grid;}
 #wsAdminBox{margin-top:18px !important;}
 .hdr-tramo{display:inline-block;padding:1px 8px;border:1px solid rgba(194,119,58,.6);color:var(--cu2);font-size:12px;letter-spacing:.14em;cursor:pointer;vertical-align:middle;}
 .hdr-tramo:hover{background:rgba(194,119,58,.15);}
+.hdr-tramos{display:inline-flex;gap:6px;vertical-align:middle;margin-left:4px;}
+.hdr-tramos button{font-family:Oswald,sans-serif;font-size:13px;font-weight:600;letter-spacing:.14em;padding:4px 14px;cursor:pointer;color:#8a96a8;background:#101826;border:1px solid rgba(194,119,58,.45);clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px));transition:background .2s,color .2s;}
+.hdr-tramos button:hover{color:#e0a46f;background:#1a2230;}
+.hdr-tramos button.on{color:#1a0f06;background:linear-gradient(135deg,#e0a46f,#c2773a);border-color:#e0a46f;box-shadow:0 0 12px rgba(224,164,111,.55);cursor:default;}
 #nisModal{position:fixed;inset:0;z-index:10001;background:rgba(3,8,15,.8);display:none;align-items:center;justify-content:center;padding:16px;font-family:Oswald,sans-serif;}
 #nisModal.open{display:flex;}
 #nisModal .nis-bx{position:relative;width:100%;max-width:420px;box-sizing:border-box;background:#0b1828;padding:26px 24px 22px;--c:16px;clip-path:polygon(0 0,calc(100% - var(--c)) 0,100% var(--c),100% 100%,var(--c) 100%,0 calc(100% - var(--c)));}
@@ -627,7 +631,7 @@ body.tr2 .gr-nuevo{display:grid;}
   <div class="hdr-l">
     <img src="ml2.png" class="hdr-logo" alt="ML2">
     <div class="badge">SEAT · CUPRA</div>
-    <div class="hdr-title" style="white-space:nowrap;">PAROS ANDON <em>·</em> ML2 · <span id="hdrTramo" class="hdr-tramo" onclick="cambiarTramo()" title="Cambiar de tramo">TRAMO 3/4 ⇄</span></div>
+    <div class="hdr-title" style="white-space:nowrap;">PAROS ANDON <em>·</em> ML2 · <span id="hdrTramo" class="hdr-tramos"><button type="button" data-tr="34" class="on" onclick="irTramo('34')">TRAMO 3/4</button><button type="button" data-tr="2" onclick="irTramo('2')">TRAMO 2</button></span></div>
   </div>
   <div class="hdr-r">
     <div class="leg">
@@ -2689,7 +2693,7 @@ async function init(){
 document.addEventListener('DOMContentLoaded',()=>{
   if(window.TR2)document.body.classList.add('tr2');
   pintarNisYo();
-  const tt=document.getElementById('hdrTramo');if(tt)tt.textContent=(window.TR2?'TRAMO 2':'TRAMO 3/4')+' ⇄';
+  const tt=document.getElementById('hdrTramo');if(tt)tt.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.tr===(window.TR2?'2':'34')));
   let u=null;try{u=sessionStorage.getItem('paros_entra');sessionStorage.removeItem('paros_entra');}catch(e){}
   if(u)setTimeout(()=>wsEnter(u),50);
 });
@@ -2767,6 +2771,7 @@ function wsTramoReal(tr,user){
     const u=new URL(location.href);u.searchParams.delete('tramo');location.replace(u.toString());return;}
   wsEnter(user);
 }
+function irTramo(t){if((window.TR2?'2':'34')!==t)cambiarTramo();}
 function cambiarTramo(){
   try{sessionStorage.setItem('paros_tramo',window.TR2?'34':'2');if(_currentUser)sessionStorage.setItem('paros_entra',_currentUser);}catch(e){}
   const u=new URL(location.href);u.searchParams.delete('tramo');location.replace(u.toString());

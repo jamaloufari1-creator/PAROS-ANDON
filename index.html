@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script>
-window.TR2=(function(){try{var q=new URLSearchParams(location.search).get('tramo');if(q)sessionStorage.setItem('paros_tramo',q);return (q||sessionStorage.getItem('paros_tramo'))==='2';}catch(e){return false;}})();
+window.TRAMO=(function(){try{var q=new URLSearchParams(location.search).get('tramo');if(q)sessionStorage.setItem('paros_tramo',q);var t=q||sessionStorage.getItem('paros_tramo')||'34';return (t==='1'||t==='2')?t:'34';}catch(e){return '34';}})();
+// TRAMO 1 usa el mismo documento que TRAMO 2 (tactos de los grupos 8 y 7); solo cambia lo que se ve
+window.TR2=window.TRAMO!=='34';window.TR1=window.TRAMO==='1';
 window.LSK=function(k){return window.TR2?k+'_tr2':k;};
 </script>
 <title>PAROS ANDON · ML2 · RAMAL 2</title>
@@ -472,6 +474,8 @@ body.sem-vac .vac-aviso{display:inline;}
 .gr-row.con select{color:#f0c49a;border-color:var(--cu);}
 .gr-nuevo{display:none;grid-template-columns:90px 1fr auto;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid rgba(194,119,58,.35);}
 body.tr2 .gr-nuevo{display:grid;}
+body.tr1 .kpi-coches,body.tr1 .tk-c{display:none !important;}
+body.tr1 .ticker-top{display:none !important;}
 .gr-nuevo input{background:#101c2d;color:var(--text);border:1px solid rgba(194,119,58,.45);font-family:Oswald,sans-serif;font-size:14px;padding:6px 8px;outline:none;min-width:0;}
 .gr-nuevo input:focus{border-color:var(--cu);}
 /* inicio con dos zonas de tramo, como ML2 Crew */
@@ -517,7 +521,7 @@ body.tr2 .gr-nuevo{display:grid;}
 .nis-yo a{color:var(--cu2);cursor:pointer;text-decoration:underline;margin-left:8px;}
 .al-quien{font-family:'IBM Plex Sans',sans-serif;font-size:11px;font-weight:500;color:var(--text2);margin-top:2px;}
 #wsCont{display:flex;flex-direction:column;align-items:center;}
-@media(min-width:701px){#wsCont .ws-tramos{width:880px;flex-wrap:nowrap;}}
+@media(min-width:701px){#wsCont .ws-tramos{width:1320px;max-width:none;flex-wrap:nowrap;}}
 #ml2-escudo{position:relative;width:clamp(110px,16vw,170px);aspect-ratio:1;margin-bottom:18px;pointer-events:none;}
 #ml2-escudo canvas{width:100%;height:100%;display:block;}
 #ml2-escudo.fin canvas{filter:drop-shadow(0 0 9px rgba(255,150,70,.6));transition:filter 1.2s;}
@@ -574,6 +578,13 @@ body.tr2 .gr-nuevo{display:grid;}
     <button onclick="wsTramo('2','102')" style="padding:14px 28px;border:2px solid rgba(119,119,119,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#AAA;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(119,119,119,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="102">ANTONIO</span></button>
     <button onclick="wsTramo('2','101')" style="padding:14px 28px;border:2px solid rgba(26,171,90,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t101);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,171,90,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="101">JOSÉ</span></button>
     <button onclick="wsTramo('2','invitado')" style="padding:14px 28px;border:2px solid #222;background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#666;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='#111'">INVITADO</button>
+    </div></div>
+    <div class="ws-tramo" data-tr="1"><div class="ws-tramo-t">TRAMO 1</div><div class="ws-tramo-b">
+    <button onclick="wsTramo('1','temez')" style="padding:14px 28px;border:2px solid rgba(255,90,0,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--orange);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,90,0,0.1)'" onmouseout="this.style.background='#111'">🏁 <span data-nm="tz">TEMEZ</span></button>
+    <button onclick="wsTramo('1','103')" style="padding:14px 28px;border:2px solid rgba(26,111,212,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t103);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,111,212,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="103">FELIX</span></button>
+    <button onclick="wsTramo('1','102')" style="padding:14px 28px;border:2px solid rgba(119,119,119,0.3);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#AAA;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(119,119,119,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="102">ANTONIO</span></button>
+    <button onclick="wsTramo('1','101')" style="padding:14px 28px;border:2px solid rgba(26,171,90,0.4);background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:var(--t101);cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(26,171,90,0.1)'" onmouseout="this.style.background='#111'"><span data-nm="101">JOSÉ</span></button>
+    <button onclick="wsTramo('1','invitado')" style="padding:14px 28px;border:2px solid #222;background:#111;font-family:Oswald,sans-serif;font-weight:700;font-size:16px;letter-spacing:2px;color:#666;cursor:pointer;transition:all .2s;" onmouseover="this.style.background='rgba(255,255,255,0.04)'" onmouseout="this.style.background='#111'">INVITADO</button>
     </div></div>
   </div>
   <button onclick="wsShowAdmin()" id="wsAdminBtn" class="ws-admin-punto" title="" aria-label="Admin"></button>
@@ -645,7 +656,7 @@ body.tr2 .gr-nuevo{display:grid;}
   <div class="hdr-l">
     <img src="ml2.png" class="hdr-logo" alt="ML2">
     <div class="badge">SEAT · CUPRA</div>
-    <div class="hdr-title" style="white-space:nowrap;">PAROS ANDON <em>·</em> ML2 · <span id="hdrTramo" class="hdr-tramos"><button type="button" data-tr="34" class="on" onclick="irTramo('34')">TRAMO 3/4</button><button type="button" data-tr="2" onclick="irTramo('2')">TRAMO 2</button></span></div>
+    <div class="hdr-title" style="white-space:nowrap;">PAROS ANDON <em>·</em> ML2 · <span id="hdrTramo" class="hdr-tramos"><button type="button" data-tr="34" class="on" onclick="irTramo('34')">TRAMO 3/4</button><button type="button" data-tr="2" onclick="irTramo('2')">TRAMO 2</button><button type="button" data-tr="1" onclick="irTramo('1')">TRAMO 1</button></span></div>
   </div>
   <div class="hdr-r">
     <div class="leg">
@@ -1266,8 +1277,10 @@ function semColorTemez(v,w){return v<=objTemezSemanaG(w)?'verde':'rojo';}
 function setSem(id,v){const el=document.getElementById(id);if(!el)return;el.className='sem-dot'+(v>0?' '+semColor(v):'');}
 const RTF_GRUPOS=['13','15','16','17'];
 function taktSeg(k,w){k=String(k).replace('t','');w=+w;return k==='103'?(w<=24?69:132):k==='102'?(w<=13?132:69):69;}
-const TR2_GRUPOS=['9','11','12','8','7'];
-function cuentaCoches(t){const g=String(grupoDeTacto(t)||'');return window.TR2?TR2_GRUPOS.includes(g):RTF_GRUPOS.includes(g);}
+const TR2_GRUPOS=['9','11','12'];const TR1_GRUPOS=['8','7'];
+// Tactos que se ven en esta vista: TRAMO 1 solo grupos 8 y 7; TRAMO 2 todos menos esos
+function TV(){if(!window.TR2)return TACTOS;let G={};try{G=_gruposTacto;}catch(e){}return TACTOS.filter(t=>TR1_GRUPOS.includes(String(G[t]||''))===!!window.TR1);}
+function cuentaCoches(t){if(window.TR1)return false;const g=String(grupoDeTacto(t)||'');return window.TR2?TR2_GRUPOS.includes(g):RTF_GRUPOS.includes(g);}
 function cochesDec(tactos,k,weeks){k=String(k).replace('t','');let c=0;weeks.forEach(w=>tactos.forEach(t=>{if(!cuentaCoches(t))return;(data[w]?.[t]?.['t'+k]||[]).forEach(v=>{const s=msToSec(v||0);if(s>0)c+=s/taktSeg(k,w);});}));return c;}
 function cochesN(tactos,k,weeks){return Math.round(cochesDec(tactos,k,weeks));}
 function cochesTot(tactos,weeks){return ['103','102','101'].reduce((a,k)=>a+cochesN(tactos,k,weeks),0);}
@@ -1283,7 +1296,7 @@ function fixKeys(obj){
 // Usa datos de tacto si existen, sino annData como fallback
 function weekSecs(w){
   let s3=0,s2=0,s1=0;
-  TACTOS.forEach(t=>DAYS.forEach((_,di)=>{
+  TV().forEach(t=>DAYS.forEach((_,di)=>{
     s3+=msToSec(data[w]?.[t]?.t103?.[di]||0);
     s2+=msToSec(data[w]?.[t]?.t102?.[di]||0);
     s1+=msToSec(data[w]?.[t]?.t101?.[di]||0);
@@ -1320,7 +1333,7 @@ function calcChartWeek(){
     for(let d=4;d>=0;d--){if(!isDiaFestivo(d)){lastWorkDay=d;break;}}
     // Comprobar si ese día tiene datos
     let tieneDatos=false;
-    for(const t of TACTOS){
+    for(const t of TV()){
       const td=wd[t];if(!td)continue;
       if((td.t103?.[lastWorkDay]||0)>0||(td.t102?.[lastWorkDay]||0)>0||(td.t101?.[lastWorkDay]||0)>0){
         tieneDatos=true;break;
@@ -1413,7 +1426,7 @@ function changeWeek(w){
   renderTacto();renderTS();updateKPIs();renderTurnoClas();renderTurnoClasAnual();renderTop5();renderLiga();renderAnnTable();renderParadas();drawPieChart();
 }
 
-/* ══ TACTOS TABLE ══ */
+/* ══ TV() TABLE ══ */
 function buildTacto(){
   const tbody=document.getElementById('tactoBody');
   TACTOS.forEach(tacto=>{
@@ -1456,7 +1469,7 @@ function onTC(tacto){
 function updateFoot(){
   let grand=0;
   DAYS.forEach((_,di)=>{
-    let dt=0;TACTOS.forEach(t=>['t103','t102','t101'].forEach(trn=>{dt+=msToSec(data[curWeek]?.[t]?.[trn]?.[di]||0);}));
+    let dt=0;TV().forEach(t=>['t103','t102','t101'].forEach(trn=>{dt+=msToSec(data[curWeek]?.[t]?.[trn]?.[di]||0);}));
     grand+=dt;const el=document.getElementById(`tf_${di}`);if(el)el.textContent=dt>0?secToMs(dt).toFixed(2):'—';
   });
   const te=document.getElementById('tf_tot');if(te)te.textContent=grand>0?secToMs(grand).toFixed(2):'—';
@@ -1471,7 +1484,7 @@ function renderTS(){
   let g3=0,g2=0,g1=0;
   DAYS.forEach((_,di)=>{
     let s3=0,s2=0,s1=0;
-    TACTOS.forEach(t=>{s3+=msToSec(data[curWeek]?.[t]?.t103?.[di]||0);s2+=msToSec(data[curWeek]?.[t]?.t102?.[di]||0);s1+=msToSec(data[curWeek]?.[t]?.t101?.[di]||0);});
+    TV().forEach(t=>{s3+=msToSec(data[curWeek]?.[t]?.t103?.[di]||0);s2+=msToSec(data[curWeek]?.[t]?.t102?.[di]||0);s1+=msToSec(data[curWeek]?.[t]?.t101?.[di]||0);});
     const f=v=>v>0?v.toFixed(2):'—';
     document.getElementById(`ts103_${di}`).textContent=f(secToMs(s3));
     document.getElementById(`ts102_${di}`).textContent=f(secToMs(s2));
@@ -1504,10 +1517,10 @@ function updateKPIs(){
   document.getElementById('sem102').className='sem-dot'+(t2>0?' '+semColorTurno(t2,curWeek,'102'):'');
   document.getElementById('sem101').className='sem-dot'+(t1>0?' '+semColorTurno(t1,curWeek,'101'):'');
   const dt=document.getElementById('semtot');if(dt)dt.className='sem-dot'+(tot>0?' '+semTot:'');
-  document.getElementById('kc103').innerHTML=cochesStr(cochesN(TACTOS,'103',[curWeek]));
-  document.getElementById('kc102').innerHTML=cochesStr(cochesN(TACTOS,'102',[curWeek]));
-  document.getElementById('kc101').innerHTML=cochesStr(cochesN(TACTOS,'101',[curWeek]));
-  document.getElementById('kctot').innerHTML=cochesStr(cochesTot(TACTOS,[curWeek]));
+  document.getElementById('kc103').innerHTML=cochesStr(cochesN(TV(),'103',[curWeek]));
+  document.getElementById('kc102').innerHTML=cochesStr(cochesN(TV(),'102',[curWeek]));
+  document.getElementById('kc101').innerHTML=cochesStr(cochesN(TV(),'101',[curWeek]));
+  document.getElementById('kctot').innerHTML=cochesStr(cochesTot(TV(),[curWeek]));
   updateTicker(t3,t2,t1,tot);
   updateInlineCrawler(t3,t2,t1,tot);
 }
@@ -1525,12 +1538,12 @@ function updateInlineCrawler(t103,t102,t101,tot){
     <span style="font-size:11px;color:var(--orange);letter-spacing:2px;font-weight:700">SEMANA ${wk}</span>
     <span style="font-size:10px;color:#555;margin-left:8px">OBJ ≤5 min/turno</span></div>`;
   html+=`<div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:4px;">
-    <div><span style="font-size:9px;color:var(--t103);letter-spacing:1px">${etq('103')}</span><br><span style="font-size:13px;color:${sc(t103)};font-weight:700">${f(t103)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TACTOS,'103',[curWeek])}cch</span></div>
-    <div><span style="font-size:9px;color:var(--t102);letter-spacing:1px">${etq('102')}</span><br><span style="font-size:13px;color:${sc(t102)};font-weight:700">${f(t102)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TACTOS,'102',[curWeek])}cch</span></div>
-    <div><span style="font-size:9px;color:var(--t101);letter-spacing:1px">${etq('101')}</span><br><span style="font-size:13px;color:${sc(t101)};font-weight:700">${f(t101)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TACTOS,'101',[curWeek])}cch</span></div>
-    <div><span style="font-size:9px;color:var(--orange);letter-spacing:1px">${nm('tz')}</span><br><span style="font-size:14px;color:${sc(tot)};font-weight:900">${f(tot)}m</span><span style="font-size:10px;color:#666"> ${cochesTot(TACTOS,[curWeek])}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t103);letter-spacing:1px">${etq('103')}</span><br><span style="font-size:13px;color:${sc(t103)};font-weight:700">${f(t103)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TV(),'103',[curWeek])}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t102);letter-spacing:1px">${etq('102')}</span><br><span style="font-size:13px;color:${sc(t102)};font-weight:700">${f(t102)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TV(),'102',[curWeek])}cch</span></div>
+    <div><span style="font-size:9px;color:var(--t101);letter-spacing:1px">${etq('101')}</span><br><span style="font-size:13px;color:${sc(t101)};font-weight:700">${f(t101)}m</span><span style="font-size:10px;color:#666"> ${cochesN(TV(),'101',[curWeek])}cch</span></div>
+    <div><span style="font-size:9px;color:var(--orange);letter-spacing:1px">${nm('tz')}</span><br><span style="font-size:14px;color:${sc(tot)};font-weight:900">${f(tot)}m</span><span style="font-size:10px;color:#666"> ${cochesTot(TV(),[curWeek])}cch</span></div>
   </div>`;
-  const top5=TACTOS.map(t=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[t]?.t103?.[di]||0)+msToSec(data[curWeek]?.[t]?.t102?.[di]||0)+msToSec(data[curWeek]?.[t]?.t101?.[di]||0);});return{t,sec,v:secToMs(sec)};}).filter(x=>x.sec>0).sort((a,b)=>b.sec-a.sec).slice(0,5);
+  const top5=TV().map(t=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[t]?.t103?.[di]||0)+msToSec(data[curWeek]?.[t]?.t102?.[di]||0)+msToSec(data[curWeek]?.[t]?.t101?.[di]||0);});return{t,sec,v:secToMs(sec)};}).filter(x=>x.sec>0).sort((a,b)=>b.sec-a.sec).slice(0,5);
   if(top5.length>0){
     html+=`<div style="margin-top:4px;font-family:Oswald;"><div style="font-size:9px;color:#555;letter-spacing:2px;margin-bottom:3px;">⏱ TOP PAROS (MIN)</div>
     ${top5.map((x,i)=>`<div style="font-size:11px;color:#CCC;padding:1px 0;">${medals[i]} <span style="color:#EEE;font-weight:600">${TN(x.t)}</span> · <span style="color:var(--orange)">${x.v.toFixed(2)} min</span></div>`).join('')}</div>`;
@@ -1736,7 +1749,7 @@ function drawParadasChart(){
   const SWp=semanasGrafica();
   for(const w of SWp){
     const d=pd[w]||{};let t3=0,t2=0,t1=0;
-    TACTOS.forEach(t=>{t3+=(d[t]?.t103||0);t2+=(d[t]?.t102||0);t1+=(d[t]?.t101||0);});
+    TV().forEach(t=>{t3+=(d[t]?.t103||0);t2+=(d[t]?.t102||0);t1+=(d[t]?.t101||0);});
     paradasPts.push({w,t3,t2,t1,tot:t3+t2+t1});
     maxV=Math.max(maxV,t3,t2,t1);
   }
@@ -1912,7 +1925,7 @@ function renderTurnoClas(){
   const f=v=>v>0?v.toFixed(2):'—';
   let html=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">`;
   turnos.forEach(trn=>{
-    const ranked=TACTOS.map(tacto=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[tacto]?.[trn.key]?.[di]||0);});return{tacto,sec,v:secToMs(sec)};}).sort((a,b)=>b.sec-a.sec);
+    const ranked=TV().map(tacto=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[tacto]?.[trn.key]?.[di]||0);});return{tacto,sec,v:secToMs(sec)};}).sort((a,b)=>b.sec-a.sec);
     const maxSec=ranked[0]?.sec||1;
     html+=`<div><div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.035);border-bottom:3px solid ${trn.color};clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);margin-bottom:1px;">
       <span style="font-family:Oswald;font-weight:900;font-size:28px;color:${trn.color}">${trn.label}</span>
@@ -1939,7 +1952,7 @@ function renderTurnoClasAnual(){
   const f=v=>v>0?v.toFixed(2):'—';
   let html=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">`;
   turnos.forEach(trn=>{
-    const ranked=TACTOS.map(tacto=>{let sec=0;for(let w=1;w<=WEEKS;w++)DAYS.forEach((_,di)=>{sec+=msToSec(data[w]?.[tacto]?.[trn.key]?.[di]||0);});return{tacto,sec,v:secToMs(sec)};}).sort((a,b)=>b.sec-a.sec);
+    const ranked=TV().map(tacto=>{let sec=0;for(let w=1;w<=WEEKS;w++)DAYS.forEach((_,di)=>{sec+=msToSec(data[w]?.[tacto]?.[trn.key]?.[di]||0);});return{tacto,sec,v:secToMs(sec)};}).sort((a,b)=>b.sec-a.sec);
     const maxSec=ranked[0]?.sec||1;
     html+=`<div><div style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.035);border-bottom:3px solid ${trn.color};clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);margin-bottom:1px;">
       <span style="font-family:Oswald;font-weight:900;font-size:28px;color:${trn.color}">${trn.label}</span>
@@ -1961,7 +1974,7 @@ function renderTurnoClasAnual(){
 
 function renderLiga(){
   const container=document.getElementById('ligaContainer');
-  const ranked=TACTOS.map(tacto=>{
+  const ranked=TV().map(tacto=>{
     let s3=0,s2=0,s1=0;
     DAYS.forEach((_,di)=>{s3+=msToSec(data[curWeek]?.[tacto]?.t103?.[di]||0);s2+=msToSec(data[curWeek]?.[tacto]?.t102?.[di]||0);s1+=msToSec(data[curWeek]?.[tacto]?.t101?.[di]||0);});
     return{tacto,t103:secToMs(s3),t102:secToMs(s2),t101:secToMs(s1),total:secToMs(s3+s2+s1)};
@@ -1986,7 +1999,7 @@ function renderLiga(){
 
 function renderTop5(){
   const container=document.getElementById('top5Container');
-  const totals=TACTOS.map(tacto=>{
+  const totals=TV().map(tacto=>{
     let s3=0,s2=0,s1=0;
     DAYS.forEach((_,di)=>{s3+=msToSec(data[curWeek]?.[tacto]?.t103?.[di]||0);s2+=msToSec(data[curWeek]?.[tacto]?.t102?.[di]||0);s1+=msToSec(data[curWeek]?.[tacto]?.t101?.[di]||0);});
     return{tacto,t103:secToMs(s3),t102:secToMs(s2),t101:secToMs(s1),total:secToMs(s3+s2+s1)};
@@ -2042,7 +2055,7 @@ function renderParadas(){
   const medals=['🔴','🟠','🟡','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪'];
   let html=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">`;
   turnos.forEach(trn=>{
-    const ranked=TACTOS.map(t=>({t,v:pd[t]?.[trn.key]||0})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+    const ranked=TV().map(t=>({t,v:pd[t]?.[trn.key]||0})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
     const maxV=ranked[0]?.v||1;
     html+=`<div><div style="background:rgba(255,255,255,.035);border-bottom:3px solid ${trn.color};clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,0 100%);padding:10px 14px;margin-bottom:1px;font-family:Oswald;font-weight:900;font-size:28px;color:${trn.color}">${trn.label} <span style="font-size:10px;letter-spacing:2px;color:var(--text3);font-weight:600">PARADAS</span></div>
       <table class="tbl" style="font-size:12px;"><thead><tr><th style="text-align:center;width:30px">#</th><th>Tacto</th><th style="width:60px">Freq.</th><th>Paradas</th></tr></thead><tbody>
@@ -2078,19 +2091,19 @@ function updateTicker(t103,t102,t101,tot){
   const top=document.getElementById('tkTop');
   if(top){
     let p=[];
-    p.push(s(`<span class="tk-lbl">SEM ${wk}</span><span class="tk-val ${sc(t103)}" style="color:var(--t103)">103</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'103',[curWeek])} perd.</span>`));
-    p.push(s(`<span class="tk-val ${sc(t102)}" style="color:var(--t102)">102</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'102',[curWeek])} perd.</span>`));
-    p.push(s(`<span class="tk-val ${sc(t101)}" style="color:var(--t101)">101</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'101',[curWeek])} perd.</span>`));
-    p.push(s(`<span class="tk-lbl">TOTAL</span><span class="tk-val ${sc(tot)}" style="font-size:15px;font-weight:900">${cochesTot(TACTOS,[curWeek])} COCHES PERDIDOS</span>`));
+    p.push(s(`<span class="tk-lbl">SEM ${wk}</span><span class="tk-val ${sc(t103)}" style="color:var(--t103)">103</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TV(),'103',[curWeek])} perd.</span>`));
+    p.push(s(`<span class="tk-val ${sc(t102)}" style="color:var(--t102)">102</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TV(),'102',[curWeek])} perd.</span>`));
+    p.push(s(`<span class="tk-val ${sc(t101)}" style="color:var(--t101)">101</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TV(),'101',[curWeek])} perd.</span>`));
+    p.push(s(`<span class="tk-lbl">TOTAL</span><span class="tk-val ${sc(tot)}" style="font-size:15px;font-weight:900">${cochesTot(TV(),[curWeek])} COCHES PERDIDOS</span>`));
     p.push(s(D));
-    p.push(s(`<span class="tk-lbl">AÑO</span><span style="color:var(--t103);font-weight:900">103</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'103',SEMS_ANO)} perd.</span>`));
-    p.push(s(`<span style="color:var(--t102);font-weight:900">102</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'102',SEMS_ANO)} perd.</span>`));
-    p.push(s(`<span style="color:var(--t101);font-weight:900">101</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TACTOS,'101',SEMS_ANO)} perd.</span>`));
-    p.push(s(`<span class="tk-lbl">TOTAL AÑO</span><span class="tk-val rojo" style="font-size:15px;font-weight:900">${cochesTot(TACTOS,SEMS_ANO)} COCHES PERDIDOS</span>`));
+    p.push(s(`<span class="tk-lbl">AÑO</span><span style="color:var(--t103);font-weight:900">103</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TV(),'103',SEMS_ANO)} perd.</span>`));
+    p.push(s(`<span style="color:var(--t102);font-weight:900">102</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TV(),'102',SEMS_ANO)} perd.</span>`));
+    p.push(s(`<span style="color:var(--t101);font-weight:900">101</span><span class="tk-sep">:</span><span class="tk-c">${cochesN(TV(),'101',SEMS_ANO)} perd.</span>`));
+    p.push(s(`<span class="tk-lbl">TOTAL AÑO</span><span class="tk-val rojo" style="font-size:15px;font-weight:900">${cochesTot(TV(),SEMS_ANO)} COCHES PERDIDOS</span>`));
     setTicker(top,p.join(''),100);
   }
   const bot=document.getElementById('tkBot');if(!bot)return;
-  const rankSem=TACTOS.map(t=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[t]?.t103?.[di]||0)+msToSec(data[curWeek]?.[t]?.t102?.[di]||0)+msToSec(data[curWeek]?.[t]?.t101?.[di]||0);});return{t,sec,v:secToMs(sec)};}).filter(x=>x.sec>0).sort((a,b)=>b.sec-a.sec);
+  const rankSem=TV().map(t=>{let sec=0;DAYS.forEach((_,di)=>{sec+=msToSec(data[curWeek]?.[t]?.t103?.[di]||0)+msToSec(data[curWeek]?.[t]?.t102?.[di]||0)+msToSec(data[curWeek]?.[t]?.t101?.[di]||0);});return{t,sec,v:secToMs(sec)};}).filter(x=>x.sec>0).sort((a,b)=>b.sec-a.sec);
   const medals=['🔴','🟠','🟡','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪','⚪'];
   let b=[];
   b.push(s(`<span class="tk-lbl">CLASIFICACIÓN SEM ${wk}</span>`));
@@ -2107,10 +2120,10 @@ function showYearModal(){
   const fc=v=>Math.round(msToSec(v)/60/TAKT);const f=v=>v>0?v.toFixed(2):'—';
   document.getElementById('yearModalBody').innerHTML=`<div><div class="modal-section-ttl">Totales acumulados año</div>
     <div class="modal-kpis">
-      <div class="modal-kpi t103"><div class="modal-kpi-lbl">TURNO 103</div><div class="modal-kpi-val">${f(v3)}</div><div class="modal-kpi-sub">min · ${cochesN(TACTOS,'103',SEMS_ANO)} coches</div></div>
-      <div class="modal-kpi t102"><div class="modal-kpi-lbl">TURNO 102</div><div class="modal-kpi-val">${f(v2)}</div><div class="modal-kpi-sub">min · ${cochesN(TACTOS,'102',SEMS_ANO)} coches</div></div>
-      <div class="modal-kpi t101"><div class="modal-kpi-lbl">TURNO 101</div><div class="modal-kpi-val">${f(v1)}</div><div class="modal-kpi-sub">min · ${cochesN(TACTOS,'101',SEMS_ANO)} coches</div></div>
-      <div class="modal-kpi tot"><div class="modal-kpi-lbl">TOTAL 3 TURNOS</div><div class="modal-kpi-val">${f(vT)}</div><div class="modal-kpi-sub">min · ${cochesTot(TACTOS,SEMS_ANO)} coches</div></div>
+      <div class="modal-kpi t103"><div class="modal-kpi-lbl">TURNO 103</div><div class="modal-kpi-val">${f(v3)}</div><div class="modal-kpi-sub">min · ${cochesN(TV(),'103',SEMS_ANO)} coches</div></div>
+      <div class="modal-kpi t102"><div class="modal-kpi-lbl">TURNO 102</div><div class="modal-kpi-val">${f(v2)}</div><div class="modal-kpi-sub">min · ${cochesN(TV(),'102',SEMS_ANO)} coches</div></div>
+      <div class="modal-kpi t101"><div class="modal-kpi-lbl">TURNO 101</div><div class="modal-kpi-val">${f(v1)}</div><div class="modal-kpi-sub">min · ${cochesN(TV(),'101',SEMS_ANO)} coches</div></div>
+      <div class="modal-kpi tot"><div class="modal-kpi-lbl">TOTAL 3 TURNOS</div><div class="modal-kpi-val">${f(vT)}</div><div class="modal-kpi-sub">min · ${cochesTot(TV(),SEMS_ANO)} coches</div></div>
     </div></div>`;
   document.getElementById('yearModal').classList.add('open');
 }
@@ -2835,9 +2848,9 @@ async function init(){
 
 /* ══ PANTALLA BIENVENIDA ══ */
 document.addEventListener('DOMContentLoaded',()=>{
-  if(window.TR2)document.body.classList.add('tr2');
+  if(window.TR2)document.body.classList.add('tr2');if(window.TR1)document.body.classList.add('tr1');
   pintarNisYo();
-  const tt=document.getElementById('hdrTramo');if(tt)tt.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.tr===(window.TR2?'2':'34')));
+  const tt=document.getElementById('hdrTramo');if(tt)tt.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.tr===window.TRAMO));
   let u=null;try{u=sessionStorage.getItem('paros_entra');sessionStorage.removeItem('paros_entra');}catch(e){}
   if(u)setTimeout(()=>wsEnter(u),50);
 });
@@ -2885,7 +2898,7 @@ function nisCerrar(){document.getElementById('nisModal').classList.remove('open'
 function wsTramo(tr,user){
   if(_ident){wsTramoReal(tr,user);return;}
   _nisPend={tr,user};
-  document.getElementById('nisDonde').textContent=(tr==='2'?'TRAMO 2':'TRAMO 3/4')+' · '+(WS_NAMES[user]||user).toUpperCase();
+  document.getElementById('nisDonde').textContent=(tr==='1'?'TRAMO 1':tr==='2'?'TRAMO 2':'TRAMO 3/4')+' · '+(WS_NAMES[user]||user).toUpperCase();
   document.getElementById('nisErr').textContent='';
   document.getElementById('nisModal').classList.add('open');
   setTimeout(()=>document.getElementById('nisNom').focus(),60);
@@ -2910,12 +2923,11 @@ async function nisEntrar(){
   if(p)wsTramoReal(p.tr,p.user);
 }
 function wsTramoReal(tr,user){
-  const quiero=tr==='2';
-  if(quiero!==!!window.TR2){try{sessionStorage.setItem('paros_tramo',quiero?'2':'34');sessionStorage.setItem('paros_entra',user);}catch(e){}
+  if(tr!==window.TRAMO){try{sessionStorage.setItem('paros_tramo',tr);sessionStorage.setItem('paros_entra',user);}catch(e){}
     const u=new URL(location.href);u.searchParams.delete('tramo');location.replace(u.toString());return;}
   wsEnter(user);
 }
-function irTramo(t){if((window.TR2?'2':'34')!==t)cambiarTramo();}
+function irTramo(t){if(window.TRAMO===t)return;try{sessionStorage.setItem('paros_tramo',t);if(_currentUser)sessionStorage.setItem('paros_entra',_currentUser);}catch(e){}const u=new URL(location.href);u.searchParams.delete('tramo');location.replace(u.toString());}
 function cambiarTramo(){
   try{sessionStorage.setItem('paros_tramo',window.TR2?'34':'2');if(_currentUser)sessionStorage.setItem('paros_entra',_currentUser);}catch(e){}
   const u=new URL(location.href);u.searchParams.delete('tramo');location.replace(u.toString());

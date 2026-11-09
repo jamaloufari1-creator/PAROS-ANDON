@@ -151,6 +151,13 @@ body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-ser
 .btn-act.dark:hover{background:#444;}
 .btn-act.red{background:#E03030;border:1px solid #c02020;}
 .pdf-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px;}
+.pdf24{border:2px dashed rgba(194,119,58,.55);background:rgba(194,119,58,.05);padding:18px;text-align:center;margin-bottom:20px;}
+.pdf24-t{font-family:Oswald,sans-serif;font-weight:700;letter-spacing:.14em;color:var(--cu2,#e0a46f);font-size:15px;}
+.pdf24-sub{font-size:12px;color:var(--text3,#8a96a8);margin:6px 0 12px;}
+.pdf24-rot{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:12px;}
+.pdf24-rot label{display:flex;flex-direction:column;gap:4px;font-family:Oswald,sans-serif;font-size:13px;letter-spacing:.1em;color:var(--text,#dfe6ee);}
+.pdf24-rot small{font-size:11px;color:var(--text3,#8a96a8);letter-spacing:.04em;}
+.pdf24-rot select{background:#101c2d;color:var(--text,#dfe6ee);border:1px solid rgba(194,119,58,.45);font-family:Oswald,sans-serif;font-size:15px;padding:5px 10px;}
 .pdf-zone{background:var(--bg-panel);border:2px dashed var(--border-dk);border-radius:4px;padding:20px;text-align:center;transition:border-color .2s,background .2s;cursor:pointer;}
 .pdf-zone:hover{border-color:var(--orange);background:var(--orange-bg);}
 .pdf-zone.has-file{border-color:var(--orange);border-style:solid;background:var(--orange-bg);}
@@ -979,6 +986,26 @@ body.tr2 .gr-nuevo{display:grid;}
           <div class="pdf-status" id="pdfStatus101"></div>
         </div>
       </div>
+      <div class="pdf24">
+        <div class="pdf24-t">📄 PDF DE 24 H · LOS 3 TURNOS</div>
+        <div class="pdf24-sub">El informe «Listado de Paradas» de 05:45 a 05:45. Andon reparte cada paro por su hora.</div>
+        <div class="pdf24-rot">
+          <label>MAÑANA <small>05:45–13:45</small><select id="rotM"></select></label>
+          <label>TARDE <small>13:45–21:45</small><select id="rotT"></select></label>
+          <label>NOCHE <small>21:45–05:45</small><select id="rotN"></select></label>
+        </div>
+        <input type="file" id="pdfFile24" accept=".pdf" style="display:none" onchange="processPDF24(this)">
+        <button class="pdf-btn" onclick="document.getElementById('pdfFile24').click()">📄 SELECCIONAR PDF DE 24 H</button>
+        <div class="pdf-status" id="pdfStatus24"></div>
+      </div>
+      <div class="pdf-preview" id="pdfPreview24">
+        <div class="pdf-preview-ttl" id="pdf24Ttl">PREVISUALIZACIÓN — REVISA ANTES DE CONFIRMAR</div>
+        <div class="pdf-preview-grid" id="pdf24Grid"></div>
+        <div class="pdf-preview-actions">
+          <button class="btn-cancel-pdf" onclick="cancelPDF24()">CANCELAR</button>
+          <button class="btn-confirm" onclick="confirmPDF24()">✓ CONFIRMAR E IMPORTAR</button>
+        </div>
+      </div>
       <div class="pdf-preview" id="pdfPreview">
         <div class="pdf-preview-ttl">PREVISUALIZACIÓN — REVISA ANTES DE CONFIRMAR</div>
         <div class="pdf-preview-grid" id="pdfPreviewGrid"></div>
@@ -1368,7 +1395,7 @@ async function loadFromFirebase(){
     if(r.paradasData){try{window._paradasData=fixKeys(JSON.parse(r.paradasData));}catch(e){}}
     if(r.pdfHistory){try{window._pdfHistory=JSON.parse(r.pdfHistory);}catch(e){}}
     if(r.accessLog){try{window._accessLog=JSON.parse(r.accessLog)||{};}catch(e){}}
-    cargarNombres(r);cargarVacaciones(r);cargarGrupos(r);cargarEscala(r);
+    cargarNombres(r);cargarVacaciones(r);cargarGrupos(r);cargarEscala(r);cargarRotacion(r);
     return true;
   }catch(e){return false;}
 }
@@ -2303,6 +2330,83 @@ function showPDFPreview(){
   }).join('');
 }
 
+/* ── PDF de 24 h ── */
+let _pdf24=null,_rotacion={};
+try{_rotacion=JSON.parse(localStorage.getItem(LSK('paros_rotacion'))||'{}')||{};}catch(e){}
+function _rotDe(w){if(_rotacion[w])return _rotacion[w];const ks=Object.keys(_rotacion).map(Number).filter(k=>k<w).sort((a,b)=>b-a);return ks.length?_rotacion[ks[0]]:{m:'103',t:'102',n:'101'};}
+function pintarRot(w){const r=_rotDe(w||curWeek);[['rotM','m'],['rotT','t'],['rotN','n']].forEach(([id,k])=>{const s=document.getElementById(id);if(!s)return;s.innerHTML=['103','102','101'].map(x=>`<option value="${x}"${r[k]===x?' selected':''}>${x}</option>`).join('');});}
+function cargarRotacion(remote){if(!remote||!remote.rotacion)return;try{_rotacion=JSON.parse(remote.rotacion)||{};localStorage.setItem(LSK('paros_rotacion'),JSON.stringify(_rotacion));pintarRot();}catch(e){}}
+function _seg(hms){const p=hms.split(':').map(Number);return p[0]*3600+p[1]*60+p[2];}
+function _mss(s){return parseFloat(`${Math.floor(s/60)}.${String(s%60).padStart(2,'0')}`);}
+function parsePDF24(text){
+  const re=/Tacto\s+(\d{3})\s+(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?\s+(\d{1,3}:\d{2}:\d{2})/g;
+  const out=[];let m;
+  while((m=re.exec(text))!==null){
+    const t=parseInt(m[1]);
+    if(!TACTOS.includes(t)){if(!window.TR2||TACTOS_TR34.includes(t))continue;nuevoTacto(t,'');}
+    const f=new Date(+m[2],+m[3]-1,+m[4],+m[5],+m[6],+m[7]);
+    const min=(f.getHours()*60+f.getMinutes()-345+1440)%1440;      // minutos desde las 05:45
+    const dia=new Date(f.getTime()-345*60000);dia.setHours(12,0,0,0); // día de producción (la noche cuenta para el día que empezó)
+    out.push({t,dia,franja:min<480?'m':min<960?'t':'n',seg:_seg(m[8]),hora:`${m[5]}:${m[6]}`});
+  }
+  return out;
+}
+async function processPDF24(input){
+  const file=input.files[0];if(!file)return;const st=document.getElementById('pdfStatus24');
+  st.textContent='⏳ Leyendo PDF...';
+  try{
+    const buf=await file.arrayBuffer();let text='';
+    if(window.pdfjsLib){const pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf)}).promise;for(let i=1;i<=pdf.numPages;i++){const c=await (await pdf.getPage(i)).getTextContent();text+=c.items.map(s=>s.str).join(' ')+'\n';}}
+    else text=new TextDecoder('latin1').decode(buf);
+    mostrarPDF24(parsePDF24(text),file.name);
+  }catch(e){st.textContent='❌ Error: '+e.message;}
+  input.value='';
+}
+function mostrarPDF24(lista,nombre){
+  const st=document.getElementById('pdfStatus24');
+  if(!lista.length){st.textContent='⚠ No he encontrado paros de atornillador con hora. ¿Es el PDF de 24 h?';return;}
+  const dias={};lista.forEach(e=>{const k=e.dia.toDateString();(dias[k]=dias[k]||{dia:e.dia,e:[]}).e.push(e);});
+  const ks=Object.keys(dias);
+  const d0=dias[ks[0]].dia,w=semanaISO(d0),di=d0.getDay()-1;
+  if(ks.length>1){st.textContent='⚠ El PDF tiene paros de más de un día de producción; solo se usa el '+d0.toLocaleDateString('es-ES');}
+  if(di<0||di>4){st.textContent='⚠ El día '+d0.toLocaleDateString('es-ES')+' es fin de semana: no se importa.';return;}
+  if(w!==curWeek){try{changeWeek(w);}catch(e){curWeek=w;}}
+  pintarRot(w);
+  const rot={m:document.getElementById('rotM').value,t:document.getElementById('rotT').value,n:document.getElementById('rotN').value};
+  const por={};['m','t','n'].forEach(f=>por[f]={min:{},par:{}});
+  dias[ks[0]].e.forEach(e=>{const p=por[e.franja];p.min[e.t]=(p.min[e.t]||0)+e.seg;p.par[e.t]=(p.par[e.t]||0)+1;});
+  _pdf24={w,di,por,nombre};
+  const DL=['LUNES','MARTES','MIÉRCOLES','JUEVES','VIERNES'][di];
+  document.getElementById('pdf24Ttl').textContent=`${DL} ${d0.toLocaleDateString('es-ES')} · SEMANA ${w} — REVISA EL TURNO DE CADA FRANJA Y CONFIRMA`;
+  const FN={m:'MAÑANA',t:'TARDE',n:'NOCHE'},col={103:'var(--t103)',102:'#AAA',101:'var(--t101)'};
+  document.getElementById('pdf24Grid').innerHTML=['m','t','n'].map(f=>{
+    const p=por[f],tot=Object.values(p.min).reduce((a,b)=>a+b,0);
+    const filas=Object.entries(p.min).sort((a,b)=>b[1]-a[1]).map(([t,s])=>`<div style="display:flex;justify-content:space-between;padding:4px 12px;border-bottom:1px solid var(--border);font-family:Oswald;font-size:12px;"><span>${TN(parseInt(t))}</span><span>${_mss(s).toFixed(2)} min · <span style="color:var(--text3)">${p.par[t]} par.</span></span></div>`).join('')||'<div style="padding:12px;font-family:Oswald;font-size:11px;color:var(--text3)">Sin paros</div>';
+    return `<div><div class="pdf-preview-col-hdr" style="color:${col[rot[f]]}">${FN[f]} → TURNO ${rot[f]} · ${_mss(tot).toFixed(2)} min</div>${filas}</div>`;}).join('');
+  document.getElementById('pdfPreview24').classList.add('show');
+  st.textContent=`✓ ${nombre} — ${dias[ks[0]].e.length} paros de atornillador`;
+}
+['rotM','rotT','rotN'].forEach(id=>document.addEventListener('change',e=>{if(e.target&&e.target.id===id&&_pdf24){const k=Object.keys(_pdf24.por);mostrarPDF24Rep();}}));
+function mostrarPDF24Rep(){const g=document.getElementById('pdf24Grid');if(!_pdf24||!g)return;const rot={m:rotM.value,t:rotT.value,n:rotN.value};const FN={m:'MAÑANA',t:'TARDE',n:'NOCHE'},col={103:'var(--t103)',102:'#AAA',101:'var(--t101)'};g.querySelectorAll('.pdf-preview-col-hdr').forEach((h,i)=>{const f=['m','t','n'][i];h.style.color=col[rot[f]];h.textContent=h.textContent.replace(/TURNO \d{3}/,'TURNO '+rot[f]);});}
+function cancelPDF24(){_pdf24=null;document.getElementById('pdfPreview24').classList.remove('show');document.getElementById('pdfStatus24').textContent='';}
+function confirmPDF24(){
+  if(!_pdf24)return;const {w,di,por}=_pdf24;
+  const rot={m:rotM.value,t:rotT.value,n:rotN.value};
+  if(new Set(Object.values(rot)).size<3){showToast('⚠ Cada franja tiene que ser un turno distinto');return;}
+  if(!data[w])data[w]={};
+  ['m','t','n'].forEach(f=>{
+    const key='t'+rot[f];
+    TACTOS.forEach(t=>{if(!data[w][t])data[w][t]={t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0,0,0,0,0]};data[w][t][key][di]=0;});
+    Object.entries(por[f].min).forEach(([t,s])=>{t=parseInt(t);if(!data[w][t])data[w][t]={t103:[0,0,0,0,0],t102:[0,0,0,0,0],t101:[0,0,0,0,0]};data[w][t][key][di]=_mss(s);});
+    if(!window._paradasData)window._paradasData={};if(!window._paradasData[w])window._paradasData[w]={};
+    Object.entries(por[f].par).forEach(([t,n])=>{t=parseInt(t);if(!window._paradasData[w][t])window._paradasData[w][t]={t103:0,t102:0,t101:0};window._paradasData[w][t][key]=(window._paradasData[w][t][key]||0)+n;});
+  });
+  _rotacion[w]=rot;try{localStorage.setItem(LSK('paros_rotacion'),JSON.stringify(_rotacion));}catch(e){}
+  if(window.fbSave)window.fbSave({rotacion:JSON.stringify(_rotacion)});
+  persist();cancelPDF24();try{renderParadas();drawParadasChart();drawChart();changeWeek(w);}catch(e){}
+  showToast(`✓ ${['Lunes','Martes','Miércoles','Jueves','Viernes'][di]} S${w} importado: mañana ${rot.m} · tarde ${rot.t} · noche ${rot.n}`);
+}
+document.addEventListener('DOMContentLoaded',()=>{try{pintarRot();}catch(e){}});
 function cancelPDF(){
   pdfPendingData={};document.getElementById('pdfPreview').classList.remove('show');
   [103,102,101].forEach(t=>{document.getElementById(`pdfStatus${t}`).textContent='';document.getElementById(`pdfZone${t}`).classList.remove('has-file');document.getElementById(`pdfFile${t}`).value='';});
@@ -2713,7 +2817,7 @@ async function init(){
     if(remote.nombres&&remote.nombres!==JSON.stringify(NM)){cargarNombres(remote);aplicarNombres();}
     changeWeek(curWeek);renderAccessLog();
     if(remote.festivos)loadFestivos(remote);
-    cargarGrupos(remote);cargarEscala(remote);
+    cargarGrupos(remote);cargarEscala(remote);cargarRotacion(remote);
     if(cargarVacaciones(remote)){drawChart();drawParadasChart();pintarSemana();pintarVacaciones();}
   }catch(e){}});}
 }

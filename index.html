@@ -1266,7 +1266,7 @@ function semColorTemez(v,w){return v<=objTemezSemanaG(w)?'verde':'rojo';}
 function setSem(id,v){const el=document.getElementById(id);if(!el)return;el.className='sem-dot'+(v>0?' '+semColor(v):'');}
 const RTF_GRUPOS=['13','15','16','17'];
 function taktSeg(k,w){k=String(k).replace('t','');w=+w;return k==='103'?(w<=24?69:132):k==='102'?(w<=13?132:69):69;}
-const TR2_GRUPOS=['9','11','12'];
+const TR2_GRUPOS=['9','11','12','8','7'];
 function cuentaCoches(t){const g=String(grupoDeTacto(t)||'');return window.TR2?TR2_GRUPOS.includes(g):RTF_GRUPOS.includes(g);}
 function cochesDec(tactos,k,weeks){k=String(k).replace('t','');let c=0;weeks.forEach(w=>tactos.forEach(t=>{if(!cuentaCoches(t))return;(data[w]?.[t]?.['t'+k]||[]).forEach(v=>{const s=msToSec(v||0);if(s>0)c+=s/taktSeg(k,w);});}));return c;}
 function cochesN(tactos,k,weeks){return Math.round(cochesDec(tactos,k,weeks));}
@@ -3124,8 +3124,8 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ══ GRUPO DE CADA ATORNILLADOR (dato interno; solo admin lo edita) ══ */
-const GRUPOS_ML2=window.TR2?['9','11','12']:['13','15','16','17'];
-const TRAMO_GRUPO={'13':'TR3/4','15':'TR3/4','16':'TR3/4','17':'TR3/4','9':'TR2','11':'TR2','12':'TR2'};
+const GRUPOS_ML2=window.TR2?['9','11','12','8','7']:['13','15','16','17'];
+const TRAMO_GRUPO={'13':'TR3/4','15':'TR3/4','16':'TR3/4','17':'TR3/4','9':'TR2','11':'TR2','12':'TR2','8':'TR1','7':'TR1'};
 function tramoDeTacto(t){return TRAMO_GRUPO[grupoDeTacto(t)]||'';}
 let _gruposTacto={};
 try{_gruposTacto=JSON.parse(localStorage.getItem(LSK('paros_grupos'))||'{}')||{};}catch(e){}

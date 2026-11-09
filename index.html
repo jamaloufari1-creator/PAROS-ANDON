@@ -2333,7 +2333,18 @@ function showPDFPreview(){
 /* ── PDF de 24 h ── */
 let _pdf24=null,_rotacion={};
 try{_rotacion=JSON.parse(localStorage.getItem(LSK('paros_rotacion'))||'{}')||{};}catch(e){}
-function _rotDe(w){if(_rotacion[w])return _rotacion[w];const ks=Object.keys(_rotacion).map(Number).filter(k=>k<w).sort((a,b)=>b-a);return ks.length?_rotacion[ks[0]]:{m:'103',t:'102',n:'101'};}
+// Calendario de turnos de ML2 Crew: el 103 hace NOCHE desde el 26/10/2026 y cambia en los lunes de cambio (los de 2026 y, fuera, cada 3 semanas)
+// rotación noche → tarde → mañana; 101 va un paso detrás del 103 y 102 dos (103 noche → 101 tarde, 102 mañana)
+const _CAL_CAMBIOS=['2026-01-19','2026-02-09','2026-03-02','2026-03-23','2026-04-13','2026-05-04','2026-05-25','2026-06-15','2026-07-06','2026-07-27','2026-09-14','2026-10-05','2026-10-26','2026-11-16','2026-12-07'];
+const _ROT_SIG={m:'n',t:'m',n:'t'};
+function _calK(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function _calLista(){if(_calLista.c)return _calLista.c;const l=_CAL_CAMBIOS.slice(),p=new Date(l[0]+'T12:00:00'),u=new Date(l[l.length-1]+'T12:00:00');
+  for(let i=1;i<=30;i++){const d=new Date(p);d.setDate(d.getDate()-21*i);l.unshift(_calK(d));}for(let i=1;i<=60;i++){const d=new Date(u);d.setDate(d.getDate()+21*i);l.push(_calK(d));}return(_calLista.c=l);}
+const _ROT_ANT={n:'m',m:'t',t:'n'};
+function _rotCalendario(w,ano){const k=_calK(lunesISO(ano||new Date().getFullYear(),w)),anc='2026-10-26',L=_calLista();let f='n';
+  if(k>=anc){L.filter(x=>x>anc&&x<=k).forEach(()=>{f=_ROT_SIG[f];});}else{L.filter(x=>x>k&&x<=anc).forEach(()=>{f=_ROT_ANT[f];});}
+  const f101=_ROT_SIG[f],f102=_ROT_SIG[f101],r={};r[f]='103';r[f101]='101';r[f102]='102';return r;}
+function _rotDe(w,ano){return _rotacion[w]||_rotCalendario(w,ano);}
 function pintarRot(w){const r=_rotDe(w||curWeek);[['rotM','m'],['rotT','t'],['rotN','n']].forEach(([id,k])=>{const s=document.getElementById(id);if(!s)return;s.innerHTML=['103','102','101'].map(x=>`<option value="${x}"${r[k]===x?' selected':''}>${x}</option>`).join('');});}
 function cargarRotacion(remote){if(!remote||!remote.rotacion)return;try{_rotacion=JSON.parse(remote.rotacion)||{};localStorage.setItem(LSK('paros_rotacion'),JSON.stringify(_rotacion));pintarRot();}catch(e){}}
 function _seg(hms){const p=hms.split(':').map(Number);return p[0]*3600+p[1]*60+p[2];}
